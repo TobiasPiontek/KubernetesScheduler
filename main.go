@@ -10,7 +10,7 @@ import (
 	"github.com/comail/colog"
 	"github.com/julienschmidt/httprouter"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/apis/extender/v1"
 )
@@ -34,11 +34,13 @@ var (
 		},
 	}
 
+	//generate host priority list and set all of them to default value zero
 	ZeroPriority = Prioritize{
 		Name: "zero_score",
 		Func: func(_ v1.Pod, nodes []v1.Node) (*schedulerapi.HostPriorityList, error) {
 			var priorityList schedulerapi.HostPriorityList
 			priorityList = make([]schedulerapi.HostPriority, len(nodes))
+			log.Print("Prioritize is called!")
 			for i, node := range nodes {
 				priorityList[i] = schedulerapi.HostPriority{
 					Host:  node.Name,
@@ -96,6 +98,7 @@ func main() {
 	colog.Register()
 	level := StringToLevel(os.Getenv("LOG_LEVEL"))
 	log.Print("Log level was set to ", strings.ToUpper(level.String()))
+	log.Print("Testing stuff")
 	colog.SetMinLevel(level)
 
 	router := httprouter.New()
@@ -103,11 +106,13 @@ func main() {
 
 	predicates := []Predicate{TruePredicate}
 	for _, p := range predicates {
+		log.Print("This is a test message of predicate!")
 		AddPredicate(router, p)
 	}
 
 	priorities := []Prioritize{ZeroPriority}
 	for _, p := range priorities {
+		log.Print("This is a test message of priority!")
 		AddPrioritize(router, p)
 	}
 

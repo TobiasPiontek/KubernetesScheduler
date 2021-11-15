@@ -160,6 +160,7 @@ func DebugLogging(h httprouter.Handle, path string) httprouter.Handle {
 }
 
 func AddPredicate(router *httprouter.Router, predicate Predicate) {
+	log.Print("added predicate!")
 	path := predicatesPrefix + "/" + predicate.Name
 	router.POST(path, DebugLogging(PredicateRoute(predicate), path))
 }

@@ -109,7 +109,7 @@ spec:
           mountPath: /my-scheduler
       - name: my-scheduler-extender-ctr
         image: a/b:c
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /version
