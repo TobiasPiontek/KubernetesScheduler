@@ -20,6 +20,8 @@ func checkBody(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+
 func PredicateRoute(predicate Predicate) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		checkBody(w, r)
@@ -38,7 +40,9 @@ func PredicateRoute(predicate Predicate) httprouter.Handle {
 				Error:       err.Error(),
 			}
 		} else {
+			log.Print("Preparing to print response")
 			extenderFilterResult = predicate.Handler(extenderArgs)
+			
 		}
 
 		if resultBody, err := json.Marshal(extenderFilterResult); err != nil {
