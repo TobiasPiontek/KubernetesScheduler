@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
+	"time"
 
 	v1 "k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/apis/extender/v1"
 )
-
 
 type Predicate struct {
 	Name string
@@ -26,26 +26,22 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get Namespace ", pod.GetNamespace())
 		log.Print("Get Labels: ", pod.GetLabels())
 		log.Print("Get Timestamp", pod.GetCreationTimestamp())
+		log.Print("", time.Now())
 		log.Print("Pod UUID: ", pod.GetUID())
-		
+		var labels = pod.GetLabels()
+		var starttime = time.Now()
+		log.Print(starttime)
+		log.Print("Printing label value: ", labels["realtime"])
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result {
-				var x bool = false
-				//canNotSchedule[node.Name] = err.Error()
-				//canNotSchedule[node.Name] = err.Error()
-				//log.Print("Delaying the pod start for 30 seconds")
-				//time.Sleep(30 * time.Second)
-				if x {
+				if labels["realtime"] == "not-critical" {
 					log.Print("can not schedule!")
 					canNotSchedule[node.Name] = err.Error()
-					x = false
-					log.Print("boolean is: ", x)
 				} else {
 					log.Print("can schedule!")
 					canSchedule = append(canSchedule, node)
-					x = true
 				}
 			}
 		}
