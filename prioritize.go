@@ -13,7 +13,7 @@ type Prioritize struct {
 }
 
 func (p Prioritize) Handler(args schedulerapi.ExtenderArgs) (*schedulerapi.HostPriorityList, error) {
-	log.Print("info: ", args.Pod)
+	log.Print("info of priority: ", args.Pod)
 	//fmt.Println(p.Func(*args.Pod, args.Nodes.Items))
 	return p.Func(*args.Pod, args.Nodes.Items)
 }

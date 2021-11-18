@@ -7,16 +7,10 @@ import (
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/apis/extender/v1"
 )
 
-//global variable
-var x bool = false
 
 type Predicate struct {
 	Name string
 	Func func(pod v1.Pod, node v1.Node) (bool, error)
-}
-
-func GetX() bool {
-	return x
 }
 
 func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.ExtenderFilterResult {
@@ -28,19 +22,31 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		result, err := p.Func(*pod, node)
 		//log.Print("Get Error: ",err.Error())
 		log.Print("Get Result (boolean): ", result)
-		log.Print("Node properties: ", pod.GetName())
-		log.Print("Node properties: ", pod.GetNamespace())
-		log.Print("Node properties: ", pod.GetLabels())
-		log.Print("Node properties: ", pod.GetManagedFields())
+		log.Print("Get Node Name", pod.GetName())
+		log.Print("Get Namespace ", pod.GetNamespace())
+		log.Print("Get Labels: ", pod.GetLabels())
+		log.Print("Get Timestamp", pod.GetCreationTimestamp())
+		log.Print("Pod UUID: ", pod.GetUID())
+		
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result {
+				var x bool = false
 				//canNotSchedule[node.Name] = err.Error()
 				//canNotSchedule[node.Name] = err.Error()
 				//log.Print("Delaying the pod start for 30 seconds")
 				//time.Sleep(30 * time.Second)
-				canSchedule = append(canSchedule, node)
+				if x {
+					log.Print("can not schedule!")
+					canNotSchedule[node.Name] = err.Error()
+					x = false
+					log.Print("boolean is: ", x)
+				} else {
+					log.Print("can schedule!")
+					canSchedule = append(canSchedule, node)
+					x = true
+				}
 			}
 		}
 	}
