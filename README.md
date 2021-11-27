@@ -1,4 +1,13 @@
 # k8s-scheduler-extender-example
+
+## run benchmark script:
+open **Benchmark_scripts** Folder
+
+execute script in [git bash for windows](https://git-scm.com/download/win) by running:
+
+``sh benchmark.sh``
+
+
 This is an example of [Kubernetes Scheduler Extender](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/scheduler_extender.md)
 
 ## How to
