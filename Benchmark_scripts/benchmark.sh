@@ -5,6 +5,9 @@ function waitToNextMinute {
    timeToSleep=$((60-$seconds))
    sleep $timeToSleep
 }
+coreCount=$(kubectl describe nodes | sed -n '/Capacity:/,/ephemeral-storage:/{//!p;}'  | awk '{print $2}')
+echo $coreCount
+
 echo logging cluster info
 start_time=$(date +%s)
 end_time=$(date +%s)
