@@ -13,8 +13,7 @@ with open('utilization-logs.csv','r') as csvfile:
         x.append(row[0])
         y.append(float(row[3]))
   
-plt.plot(x, y, color = 'g', linestyle = 'dashed',
-         marker = 'o',label = "CPU utilization")
+plt.plot(x, y, color = 'b', linestyle = 'solid',label = "CPU utilization")
 
 xtics = []
 xlabels = []
