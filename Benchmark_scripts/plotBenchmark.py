@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import csv
 
 
-xLabelCount=15
+xLabelCount=24
 
 x = []
 y = []
@@ -33,5 +33,7 @@ plt.xlabel('Times')
 plt.ylabel('CPU Utilization in %')
 plt.title('Kubernetes Cluster Load', fontsize = 20)
 plt.grid()
+plt.ylim([0,100])
+plt.xlim([0,len(y)-1])
 plt.legend()
 plt.show()

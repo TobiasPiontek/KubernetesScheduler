@@ -22,14 +22,24 @@ waitToNextMinute
 while [ $elapsed -lt 86400 ]
 do
    logTimeStamp=$(date +"%T")
+   #get logs from kubectl API
    kubePerformanceOutput=$(kubectl top nodes --use-protocol-buffers)
+   kubeReservationOutput=$(kubectl describe nodes | sed -n '/Allocated resources:/,/Events:/{//!p;}' | sed '4q;d')
+   #filtering block of the results
+
+   #filtering cpuRealtimeData
    logCPUMili=$(echo $kubePerformanceOutput | cut -d" " -f7)
    logCPUPercent=$(echo $kubePerformanceOutput | cut -d" " -f8)
    CPUMiliNumber=$(echo $kubePerformanceOutput | cut -d" " -f7 | sed 's/.$//')
    logCpuPercentPrecise=$(calc $(calc $CPUMiliNumber/$coreCount)/10)
    logMemoryUsageBytes=$(echo $kubePerformanceOutput | cut -d" " -f9)
    logMemoryUsagePercent=$(echo $kubePerformanceOutput | cut -d" " -f10)
-   logLine=$logTimeStamp,$logCPUMili,$logCPUPercent,$logCpuPercentPrecise,$logMemoryUsageBytes,$logMemoryUsagePercent
+
+   #filtering cpuReservations
+   logcpuMiliReservation=$(echo $kubeReservationOutput | awk '{print $2}' | sed 's/.$//')
+   logcpuPercentReservation=$(echo $kubeReservationOutput | awk '{print $3}' | cut -c 2- | sed 's/.\{2\}$//')
+   logcpuPreciseReservation=$(calc $(calc $logcpuMiliReservation/$coreCount)/10)
+   logLine=$logTimeStamp,$logCPUMili,$logCPUPercent,$logCpuPercentPrecise,$logMemoryUsageBytes,$logMemoryUsagePercent,$logcpuMiliReservation,$logcpuPercentReservation,$logcpuPreciseReservation
    echo $logLine >> $logFileName
    echo $logLine
    elapsed=$(( end_time - start_time ))
