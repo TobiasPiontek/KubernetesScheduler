@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-with-timeout
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 240
+  template:
+    spec:
+      schedulerName: my-scheduler
+      containers:
+      - name: pi
+        image: nginx
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+      restartPolicy: Never
