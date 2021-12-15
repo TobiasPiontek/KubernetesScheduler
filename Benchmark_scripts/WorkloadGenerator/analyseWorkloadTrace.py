@@ -1,10 +1,10 @@
 import csv
 import datetime
+import matplotlib.pyplot as plt
 
 # website used for debugging
 # https://timestamp.online/
 
-skip = 52  # lines to skip out of the .gwf file, needs to be recalibrated for each file
 core_count = []
 runtime = []
 cpu_utilization = []
@@ -21,9 +21,12 @@ for x in range(0, 24):
 with open("anon_jobs.gwf") as file:
     tsv_file = csv.reader(file, delimiter="\t")
     # skip the header part
-    for x in range(0, skip):
-        next(tsv_file)
+    fieldcount = 0
+    while int(fieldcount) < 29:
+        fieldcount = int(len(next(tsv_file)))
+
     # iterate over .gwf data
+
     for line in tsv_file:
         lines_total = lines_total + 1
         if (float(line.__getitem__(3)) > -0.5) and (float(line.__getitem__(4)) > -0.5) and float(line.__getitem__(5)) > -0.5:
@@ -41,15 +44,19 @@ with open("anon_jobs.gwf") as file:
             #if float(line.__getitem__(5)) > float(line.__getitem__(3)):
                 #print("Debug", lines_total)
 
-
-
-
 job_count = []
+time_of_day = []
+i = 0
+for jobs in core_count:
+    time_of_day.append(i)
+    job_count.append(len(jobs))
+    i = i+1
+
+
 
 def calculate_avg_hour_usage(list):
     avg_frame = []
     for hour_frame in list:
-        job_count.append(len(hour_frame))
         sum = 0.0
         for element in hour_frame:
             sum = sum + float(element)
@@ -60,8 +67,8 @@ def calculate_avg_hour_usage(list):
 
 # gain statistical data:
 core_count_avg_hour = calculate_avg_hour_usage(core_count)
-runtime_avg_hour = [calculate_avg_hour_usage(runtime)]
-cpu_utilization_avg_hour = [calculate_avg_hour_usage(cpu_utilization)]
+runtime_avg_hour = calculate_avg_hour_usage(runtime)
+cpu_utilization_avg_hour = calculate_avg_hour_usage(cpu_utilization)
 
 
 print("Valid lines", lines_used, " of total", lines_total, " lines with usage percentage of ", float(lines_used)*100/float(lines_total), "%")
@@ -70,4 +77,18 @@ print("average Core Count per hour: ", core_count_avg_hour)
 print("average runtime per Hour: ", runtime_avg_hour)
 print("cpu utilization avg per Hour: ", cpu_utilization_avg_hour) #unusable
 print("job count per hour", job_count)
+print("time axis", time_of_day)
+
+
+def generate_bar_plot(xaxis, yaxis, title):
+    fig = plt.figure()
+    fig.canvas.manager.set_window_title(title)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.bar(xaxis, yaxis)
+    plt.show()
+
+
+generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour")
+generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour")
+generate_bar_plot(time_of_day, job_count, "average job count per hour")
 
