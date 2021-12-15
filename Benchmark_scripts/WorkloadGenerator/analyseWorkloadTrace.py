@@ -36,7 +36,7 @@ with open("anon_jobs.gwf") as file:
 
 
 
-
+    #Debug Block
     #print(timestamp[2].__getitem__(0))
     #print(cpu_utilization[2].__getitem__(0))
     #print(timestamp[3].__getitem__(0))
