@@ -13,10 +13,12 @@ timestamp = []
 lines_used = 0
 lines_total = 0
 
+intervallcount = 24
 
 
 
-for x in range(0, 24):
+
+for x in range(0, intervallcount):
     runtime.append([])
     core_count.append([])
     cpu_utilization.append([])
@@ -87,8 +89,9 @@ print("time axis", time_of_day)
 def generate_bar_plot(xaxis, yaxis, title):
     fig = plt.figure()
     fig.canvas.manager.set_window_title(title)
-    ax = fig.add_axes([0, 0, 1, 1])
-    ax.bar(xaxis, yaxis)
+    #ax = fig.add_axes([0, 0, 1, 1])
+    plt.bar(xaxis,yaxis)
+    #ax.bar(xaxis, yaxis)
     plt.show()
 
 
@@ -99,7 +102,30 @@ def generate_bar_plot(xaxis, yaxis, title):
 
 
 ### Block to generate the workflow list
+#generate total sum of hourly distributions
+sum_core=0
+sum_runtime=0
+sum_job_count=0
+for x in range(0, intervallcount):
+    sum_core = sum_core + core_count_avg_hour.__getitem__(x)
+    sum_runtime = sum_runtime + runtime_avg_hour.__getitem__(x)
+    sum_job_count = sum_job_count + job_count.__getitem__(x)
 
+#generate normalized utilizations
+core_count_normalized = []
+runtime_normalized = []
+job_count_normalized = []
+
+for x in range(0, intervallcount):
+    core_count_normalized.append(core_count_avg_hour.__getitem__(x)*intervallcount/sum_core)
+    runtime_normalized.append(runtime_avg_hour.__getitem__(x)*intervallcount/sum_runtime)
+    job_count_normalized.append(job_count.__getitem__(x)*intervallcount/sum_job_count)
+
+generate_bar_plot(time_of_day, core_count_normalized, "average core count per hour")
+generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
+generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
+
+#generate the average values that get modified
 milicores_total = 2000
 maximum_jobs = 100
 avg_utilization = 0.6
