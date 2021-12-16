@@ -13,9 +13,8 @@ timestamp = []
 lines_used = 0
 lines_total = 0
 
-for x in range(0,100):
-    print(random.gauss(33, 2))
-    
+
+
 
 for x in range(0, 24):
     runtime.append([])
@@ -93,23 +92,30 @@ def generate_bar_plot(xaxis, yaxis, title):
     plt.show()
 
 
-generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour")
-generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour")
-generate_bar_plot(time_of_day, job_count, "average job count per hour")
+#Plots about the analyzed .gwf file
+#generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour")
+#generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour")
+#generate_bar_plot(time_of_day, job_count, "average job count per hour")
 
 
 ### Block to generate the workflow list
 
 milicores_total = 2000
 maximum_jobs = 100
-utilization = 0.6
-maximum_runtime = 3600 #one Hour
+avg_utilization = 0.6
+average_runtime = 1800 #half an hour
+avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
+avg_milicore_per_job = (milicores_total / maximum_jobs) * avg_utilization
 
 
-avg_milicore_per_job = (milicores_total / maximum_jobs) / utilization
-
+print("avg job intervall", avg_job_interval_hour)
 print("Debug", avg_milicore_per_job)
+
+
 
 
 # mit gaus funktion generieren der benchmarks
 # https://www.geeksforgeeks.org/random-gauss-function-in-python/
+
+#for x in range(0,100):
+#    print(random.gauss(33, 2))
