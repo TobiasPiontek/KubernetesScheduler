@@ -11,9 +11,9 @@ with open('utilization-logs.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         x.append(row[0])
-        y.append(float(row[3]))
+        y.append(float(row[7]))
   
-plt.plot(x, y, color = 'b', linestyle = 'solid',label = "CPU utilization")
+plt.plot(x, y, color = 'b', linestyle = 'solid',label = "CPU reservation")
 
 xtics = []
 xlabels = []
@@ -30,8 +30,8 @@ plt.xticks(xtics,xlabels)
 
 plt.fill_between(x,y)
 plt.xlabel('Times')
-plt.ylabel('CPU Utilization in %')
-plt.title('Kubernetes Cluster Load', fontsize = 20)
+plt.ylabel('CPU Reservation in %')
+plt.title('Kubernetes Cluster cpu reservation', fontsize = 20)
 plt.grid()
 plt.ylim([0,100])
 plt.xlim([0,len(y)-1])

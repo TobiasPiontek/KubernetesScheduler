@@ -89,9 +89,7 @@ print("time axis", time_of_day)
 def generate_bar_plot(xaxis, yaxis, title):
     fig = plt.figure()
     fig.canvas.manager.set_window_title(title)
-    #ax = fig.add_axes([0, 0, 1, 1])
     plt.bar(xaxis,yaxis)
-    #ax.bar(xaxis, yaxis)
     plt.show()
 
 
@@ -126,19 +124,36 @@ generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
 generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
 
 #generate the average values that get modified
-milicores_total = 2000
+milicores_total = 1000
 maximum_jobs = 100
-avg_utilization = 0.6
-average_runtime = 1800 #half an hour
+avg_utilization = 1.0
+average_runtime = 600 #10 minutes
 avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
 avg_milicore_per_job = (milicores_total / maximum_jobs) * avg_utilization
 
 
-print("avg job intervall", avg_job_interval_hour)
+print("avg job interval", avg_job_interval_hour)
 print("Debug", avg_milicore_per_job)
 
 
+#Block to write the csv file
 
+f = open('workload.csv', 'w', newline='')
+writer = csv.writer(f, lineterminator="\n") #use linux style line endings
+
+
+print("start writing workload file...")
+
+time_counter = 0
+while time_counter < 86400: #generate for whole day
+    write_data = [str(int(avg_milicore_per_job)), str(int(average_runtime)), str(int(avg_job_interval_hour))]
+    print(write_data)
+    writer.writerow(write_data)
+    time_counter = int(time_counter) + int(avg_job_interval_hour)
+
+f.close()
+
+print("done!")
 
 # mit gaus funktion generieren der benchmarks
 # https://www.geeksforgeeks.org/random-gauss-function-in-python/

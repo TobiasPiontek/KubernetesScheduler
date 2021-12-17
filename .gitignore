@@ -1,3 +1,5 @@
 /Benchmark_scripts/*.csv
 /Benchmark_scripts/.idea/*
 /Benchmark_scripts/WorkloadGenerator/*.gwf
+/Benchmark_scripts/WorkloadGenerator/*.csv
+/Benchmark_scripts/LogData/*.csv
