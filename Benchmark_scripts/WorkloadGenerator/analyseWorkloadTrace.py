@@ -94,9 +94,9 @@ def generate_bar_plot(xaxis, yaxis, title):
 
 
 #Plots about the analyzed .gwf file
-#generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour")
-#generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour")
-#generate_bar_plot(time_of_day, job_count, "average job count per hour")
+generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour")
+generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour")
+generate_bar_plot(time_of_day, job_count, "average job count per hour")
 
 
 ### Block to generate the workflow list
@@ -124,9 +124,9 @@ generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
 generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
 
 #generate the average values that get modified
-milicores_total = 1000
+milicores_total = 1250
 maximum_jobs = 100
-avg_utilization = 1.0
+avg_utilization = 0.8
 average_runtime = 600 #10 minutes
 avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
 avg_milicore_per_job = (milicores_total / maximum_jobs) * avg_utilization
