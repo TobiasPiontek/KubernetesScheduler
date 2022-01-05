@@ -146,7 +146,12 @@ print("start writing workload file...")
 
 time_counter = 0
 while time_counter < 86400: #generate for whole day
-    write_data = [str(int(avg_milicore_per_job)), str(int(average_runtime)), str(int(avg_job_interval_hour))]
+    label = ""
+    if random.random() > 0.9:
+        label="not-critical"
+    else:
+        label="critical"
+    write_data = [str(int(avg_milicore_per_job)), str(int(average_runtime)), str(int(avg_job_interval_hour)), label]
     print(write_data)
     writer.writerow(write_data)
     time_counter = int(time_counter) + int(avg_job_interval_hour)
