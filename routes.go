@@ -46,7 +46,7 @@ func PredicateRoute(predicate Predicate) httprouter.Handle {
 		if resultBody, err := json.Marshal(extenderFilterResult); err != nil {
 			panic(err)
 		} else {
-			log.Print("info: ", predicate.Name, " extenderFilterResult = ", string(resultBody))
+			//log.Print("info: ", predicate.Name, " extenderFilterResult = ", string(resultBody))
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			w.Write(resultBody)

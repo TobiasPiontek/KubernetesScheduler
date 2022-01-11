@@ -17,14 +17,37 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	pod := args.Pod
 	canSchedule := make([]v1.Node, 0, len(args.Nodes.Items))
 	canNotSchedule := make(map[string]string)
-	log.Print("Testprint of the Predicate handler!")
 	for _, node := range args.Nodes.Items {
 		result, err := p.Func(*pod, node)
 		//log.Print("Get Error: ",err.Error())
+		log.Print("---------- Start of Log Print ----------")
+
+		log.Print("---------- Geet Metadata of pod ----------")
 		log.Print("Get Result (boolean): ", result)
 		log.Print("Get Node Name: ", pod.GetName())
 		log.Print("Get Namespace: ", pod.GetNamespace())
 		log.Print("Get Labels: ", pod.GetLabels())
+
+		log.Print("---------- Get Metadata of node ----------")
+		log.Print("Get node status: ", node.Status)
+		log.Print("Get managed fields: ", node.GetManagedFields())
+		log.Print("Get node cpu capacity: ", node.Status.Capacity.Cpu())
+		log.Print("Get node cpu allocatable: ", node.Status.Allocatable.Cpu())
+		log.Print("Get node memory capacity: ", node.Status.Capacity.Memory())
+		log.Print("Get node memory allocatable: ", node.Status.Allocatable.Memory())
+		log.Print("Get Pod capacity: ", node.Status.Capacity.Pods())
+		log.Print("Get pod allocatable: ", node.Status.Allocatable.Pods())
+
+		log.Print("Get node spec: ", node.Spec.String())
+		log.Print("cpu test print: ", node.Status.Capacity.Cpu().Format)
+		log.Print("Node status Node info: ", node.Status.NodeInfo)
+
+		log.Print("node status: ", node.Status.Conditions)
+		//log.Print("node status to String: ", node.Status.String())
+		log.Print("node status config: ", node.Status.Config.String())
+		log.Print("node kind", node.Kind)
+		log.Print("node info: ", node.Status.NodeInfo)
+		//log.Print("node Images: ", node.Status.Images)
 
 		log.Print("---------- Get timestamp of pod ----------")
 		log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
@@ -40,6 +63,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get scheduler minute: ", time.Now().Minute())
 		log.Print("Get scheduler second: ", time.Now().Second())
 
+		log.Print("---------- End of Scheduler Log print ----------")
 		//node.Status.
 
 		log.Print("Pod UUID: ", pod.GetUID())
