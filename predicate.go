@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os/exec"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -32,6 +33,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get node status: ", node.Status)
 		log.Print("Get managed fields: ", node.GetManagedFields())
 		log.Print("Get node cpu capacity: ", node.Status.Capacity.Cpu())
+		node.Status.Allocatable.Cpu()
 		log.Print("Get node cpu allocatable: ", node.Status.Allocatable.Cpu())
 		log.Print("Get node memory capacity: ", node.Status.Capacity.Memory())
 		log.Print("Get node memory allocatable: ", node.Status.Allocatable.Memory())
@@ -48,6 +50,17 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("node kind", node.Kind)
 		log.Print("node info: ", node.Status.NodeInfo)
 		//log.Print("node Images: ", node.Status.Images)
+
+		//block to aquire values
+		cmd := exec.Command("echo", "hello")
+		stdout, err := cmd.Output()
+		if err != nil {
+			log.Print(err.Error())
+		}
+		// Print the output
+		log.Print("doing sketchy stuff: ")
+		log.Print(string(stdout))
+		log.Print("doing sketchy stuff end: ")
 
 		log.Print("---------- Get timestamp of pod ----------")
 		log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
