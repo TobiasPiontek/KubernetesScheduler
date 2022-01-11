@@ -52,7 +52,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		//log.Print("node Images: ", node.Status.Images)
 
 		//block to aquire values
-		cmd := exec.Command("echo", "hello")
+		cmd := exec.Command("kubectl", "describe", "nodes")
 		stdout, err := cmd.Output()
 		if err != nil {
 			log.Print(err.Error())

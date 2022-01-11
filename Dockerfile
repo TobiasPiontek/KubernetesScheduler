@@ -15,6 +15,6 @@ COPY . .
 RUN go install -ldflags "-s -w -X main.version=$VERSION" k8s-scheduler-extender-example
 
 # runtime image
-FROM gcr.io/google_containers/ubuntu-slim:0.14
+FROM gcr.io/google_containers/hyperkube:v1.16.3
 COPY --from=builder /go/bin/k8s-scheduler-extender-example /usr/bin/k8s-scheduler-extender-example
 ENTRYPOINT ["k8s-scheduler-extender-example"]
