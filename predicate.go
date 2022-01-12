@@ -84,8 +84,8 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get Node resource cpu mili: ", node.Status.Capacity.Cpu().MilliValue())
 		//pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()
 		//node.Status.Capacity.Cpu().AsInt64()
-		finalresult := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
-		log.Print("Get Pod resource percentage: ", finalresult)
+		resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
+		log.Print("Get Pod resource percentage: ", resourcePercentagePod)
 
 		log.Print("---------- Get timestamp of scheduler instance ----------")
 		log.Print("scheduler timestamp: ", time.Now())
