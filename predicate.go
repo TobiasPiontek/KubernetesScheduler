@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os/exec"
+	"regexp"
+	"strings"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -52,6 +54,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		//log.Print("node Images: ", node.Status.Images)
 
 		//block to aquire values
+		//cmd := exec.Command("kubectl", "describe", "nodes")
 		cmd := exec.Command("kubectl", "describe", "nodes")
 		stdout, err := cmd.Output()
 		if err != nil {
@@ -61,6 +64,17 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("doing sketchy stuff: ")
 		log.Print(string(stdout))
 		log.Print("doing sketchy stuff end: ")
+
+		//out := strings.TrimLeft(strings.TrimRight(string(stdout), "Events:"), "Allocated resources:")
+		//out, _ := regexp.MatchString("Allocated resources:((.|\n)*)Events:", string(stdout))
+
+		re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
+
+		out := re.FindStringSubmatch(string(stdout))
+		value := out[0]
+		value = value[(strings.IndexByte(value, '(') + 1):]
+
+		log.Print("cutted output is ", value)
 
 		log.Print("---------- Get timestamp of pod ----------")
 		log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
