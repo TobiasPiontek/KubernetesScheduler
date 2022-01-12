@@ -35,7 +35,6 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get node status: ", node.Status)
 		log.Print("Get managed fields: ", node.GetManagedFields())
 		log.Print("Get node cpu capacity: ", node.Status.Capacity.Cpu())
-		node.Status.Allocatable.Cpu()
 		log.Print("Get node cpu allocatable: ", node.Status.Allocatable.Cpu())
 		log.Print("Get node memory capacity: ", node.Status.Capacity.Memory())
 		log.Print("Get node memory allocatable: ", node.Status.Allocatable.Memory())
@@ -47,25 +46,24 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Node status Node info: ", node.Status.NodeInfo)
 
 		log.Print("node status: ", node.Status.Conditions)
-		//log.Print("node status to String: ", node.Status.String())
 		log.Print("node status config: ", node.Status.Config.String())
 		log.Print("node kind", node.Kind)
 		log.Print("node info: ", node.Status.NodeInfo)
-		//log.Print("node Images: ", node.Status.Images)
 
 		//block to aquire values
-		//cmd := exec.Command("kubectl", "describe", "nodes")
 		cmd := exec.Command("kubectl", "describe", "nodes")
 		stdout, err := cmd.Output()
 		if err != nil {
 			log.Print(err.Error())
 		}
 		// Print the output
-		log.Print("doing sketchy stuff: ")
-		log.Print(string(stdout))
-		log.Print("doing sketchy stuff end: ")
+		//log.Print("doing sketchy stuff: ")
+		//log.Print(string(stdout))
+		//log.Print("doing sketchy stuff end: ")
 
 		//create regex that gets the cpu line
+		//regex that does not work because of instruction set :(
+		//Allocated resources:(.|\n)*cpu(\s)*(\d)*m(\s)*\(\K(\d)*
 		re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
 
 		out := re.FindStringSubmatch(string(stdout))
@@ -81,6 +79,13 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get pod hour: ", pod.GetCreationTimestamp().Hour())
 		log.Print("Get pod minute: ", pod.GetCreationTimestamp().Minute())
 		log.Print("Get pod seconds: ", pod.GetCreationTimestamp().Second())
+		log.Print("Get pod annotations: ", pod.Annotations)
+		log.Print("Get Pod resource limits: ", pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue())
+		log.Print("Get Node resource cpu mili: ", node.Status.Capacity.Cpu().MilliValue())
+		//pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()
+		//node.Status.Capacity.Cpu().AsInt64()
+		finalresult := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
+		log.Print("Get Pod resource percentage: ", finalresult)
 
 		log.Print("---------- Get timestamp of scheduler instance ----------")
 		log.Print("scheduler timestamp: ", time.Now())
@@ -90,7 +95,6 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get scheduler second: ", time.Now().Second())
 
 		log.Print("---------- End of Scheduler Log print ----------")
-		//node.Status.
 
 		log.Print("Pod UUID: ", pod.GetUID())
 		var labels = pod.GetLabels()
