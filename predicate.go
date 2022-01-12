@@ -65,13 +65,12 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print(string(stdout))
 		log.Print("doing sketchy stuff end: ")
 
-		//out := strings.TrimLeft(strings.TrimRight(string(stdout), "Events:"), "Allocated resources:")
-		//out, _ := regexp.MatchString("Allocated resources:((.|\n)*)Events:", string(stdout))
-
+		//create regex that gets the cpu line
 		re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
 
 		out := re.FindStringSubmatch(string(stdout))
 		value := out[0]
+		//extract the percentage value of the cpu utilization
 		value = value[(strings.IndexByte(value, '(') + 1):]
 
 		log.Print("cutted output is ", value)
