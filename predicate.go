@@ -4,6 +4,7 @@ import (
 	"log"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +24,10 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	for _, node := range args.Nodes.Items {
 		result, err := p.Func(*pod, node)
 		//log.Print("Get Error: ",err.Error())
+
+		//Block to assign server state variables
+		cpulimit := getCPUUtilizatiom()
+
 		log.Print("---------- Start of Log Print ----------")
 
 		log.Print("---------- Geet Metadata of pod ----------")
@@ -31,47 +36,21 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get Namespace: ", pod.GetNamespace())
 		log.Print("Get Labels: ", pod.GetLabels())
 
-		log.Print("---------- Get Metadata of node ----------")
-		log.Print("Get node status: ", node.Status)
-		log.Print("Get managed fields: ", node.GetManagedFields())
-		log.Print("Get node cpu capacity: ", node.Status.Capacity.Cpu())
-		log.Print("Get node cpu allocatable: ", node.Status.Allocatable.Cpu())
-		log.Print("Get node memory capacity: ", node.Status.Capacity.Memory())
-		log.Print("Get node memory allocatable: ", node.Status.Allocatable.Memory())
-		log.Print("Get Pod capacity: ", node.Status.Capacity.Pods())
-		log.Print("Get pod allocatable: ", node.Status.Allocatable.Pods())
+		//log.Print("---------- Get Metadata of node ----------")
+		//log.Print("Get node status: ", node.Status) lots of info but current resource limit not encoded
+		//log.Print("Get managed fields: ", node.GetManagedFields()) //results in messy printout coded in unreadable way
+		//log.Print("Get node cpu capacity: ", node.Status.Capacity.Cpu())
+		//log.Print("Get node cpu allocatable: ", node.Status.Allocatable.Cpu())
+		//log.Print("Get node memory capacity: ", node.Status.Capacity.Memory())
+		//log.Print("Get node memory allocatable: ", node.Status.Allocatable.Memory())
+		//log.Print("Get Pod capacity: ", node.Status.Capacity.Pods())
+		//log.Print("Get pod allocatable: ", node.Status.Allocatable.Pods())
 
-		log.Print("Get node spec: ", node.Spec.String())
-		log.Print("cpu test print: ", node.Status.Capacity.Cpu().Format)
-		log.Print("Node status Node info: ", node.Status.NodeInfo)
+		//log.Print("Get node spec: ", node.Spec.String()) //details about ip address room
+		//log.Print("Node status Node info: ", node.Status.NodeInfo)//runtime information
 
-		log.Print("node status: ", node.Status.Conditions)
-		log.Print("node status config: ", node.Status.Config.String())
-		log.Print("node kind", node.Kind)
-		log.Print("node info: ", node.Status.NodeInfo)
-
-		//block to aquire values
-		cmd := exec.Command("kubectl", "describe", "nodes")
-		stdout, err := cmd.Output()
-		if err != nil {
-			log.Print(err.Error())
-		}
-		// Print the output
-		//log.Print("doing sketchy stuff: ")
-		//log.Print(string(stdout))
-		//log.Print("doing sketchy stuff end: ")
-
-		//create regex that gets the cpu line
-		//regex that does not work because of instruction set :(
-		//Allocated resources:(.|\n)*cpu(\s)*(\d)*m(\s)*\(\K(\d)*
-		re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
-
-		out := re.FindStringSubmatch(string(stdout))
-		value := out[0]
-		//extract the percentage value of the cpu utilization
-		value = value[(strings.IndexByte(value, '(') + 1):]
-
-		log.Print("cutted output is ", value)
+		//log.Print("node status: ", node.Status.Conditions)
+		//log.Print("node status config: ", node.Status.Config.String()) //usefull for logs, in case some resource limits the node
 
 		log.Print("---------- Get timestamp of pod ----------")
 		log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
@@ -79,7 +58,6 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("Get pod hour: ", pod.GetCreationTimestamp().Hour())
 		log.Print("Get pod minute: ", pod.GetCreationTimestamp().Minute())
 		log.Print("Get pod seconds: ", pod.GetCreationTimestamp().Second())
-		log.Print("Get pod annotations: ", pod.Annotations)
 		log.Print("Get Pod resource limits: ", pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue())
 		log.Print("Get Node resource cpu mili: ", node.Status.Capacity.Cpu().MilliValue())
 		//pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()
@@ -93,6 +71,8 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("get scheduler hour: ", time.Now().Hour())
 		log.Print("Get scheduler minute: ", time.Now().Minute())
 		log.Print("Get scheduler second: ", time.Now().Second())
+
+		log.Print("cpu Limit of node as float is: ", cpulimit)
 
 		log.Print("---------- End of Scheduler Log print ----------")
 
@@ -126,4 +106,31 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	}
 
 	return &result
+}
+
+//This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
+func getCPUUtilizatiom() float64 {
+	//block to aquire values
+	cmd := exec.Command("kubectl", "describe", "nodes")
+	stdout, err := cmd.Output()
+	if err != nil {
+		log.Print(err.Error())
+	}
+	// Print the output
+	//log.Print("doing sketchy stuff: ")
+	//log.Print(string(stdout))
+	//log.Print("doing sketchy stuff end: ")
+
+	//create regex that gets the cpu line
+	//regex that does not work because of instruction set :(
+	//Allocated resources:(.|\n)*cpu(\s)*(\d)*m(\s)*\(\K(\d)*
+	re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
+
+	cpuResultConsole := re.FindStringSubmatch(string(stdout))
+	cpuResultRelevantString := cpuResultConsole[0]
+	//extract the percentage value of the cpu utilization
+	cpuResultRelevantString = cpuResultRelevantString[(strings.IndexByte(cpuResultRelevantString, '(') + 1):]
+	var cpuLimit float64
+	cpuLimit, err = strconv.ParseFloat(cpuResultRelevantString, 64)
+	return cpuLimit
 }
