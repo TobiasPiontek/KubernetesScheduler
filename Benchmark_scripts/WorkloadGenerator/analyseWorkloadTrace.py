@@ -125,9 +125,10 @@ generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour
 
 #generate the average values that get modified
 milicores_total = 1250
-maximum_jobs = 100
+maximum_jobs = 70
 avg_utilization = 0.8
 average_runtime = 600 #10 minutes
+rate_of_critical_jobs = 0.8
 avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
 avg_milicore_per_job = (milicores_total / maximum_jobs) * avg_utilization
 
@@ -147,7 +148,7 @@ print("start writing workload file...")
 time_counter = 0
 while time_counter < 86400: #generate for whole day
     label = ""
-    if random.random() > 0.9:
+    if random.random() > rate_of_critical_jobs:
         label="not-critical"
     else:
         label="critical"

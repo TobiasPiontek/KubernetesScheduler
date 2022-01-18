@@ -32,9 +32,9 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 
 		log.Print("---------- Geet Metadata of pod ----------")
 		log.Print("Get Result (boolean): ", result)
-		log.Print("Get Node Name: ", pod.GetName())
-		log.Print("Get Namespace: ", pod.GetNamespace())
-		log.Print("Get Labels: ", pod.GetLabels())
+		//log.Print("Get Node Name: ", pod.GetName())
+		//log.Print("Get Namespace: ", pod.GetNamespace())
+		//log.Print("Get Labels: ", pod.GetLabels())
 
 		//log.Print("---------- Get Metadata of node ----------")
 		//log.Print("Get node status: ", node.Status) lots of info but current resource limit not encoded
@@ -53,24 +53,19 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		//log.Print("node status config: ", node.Status.Config.String()) //usefull for logs, in case some resource limits the node
 
 		log.Print("---------- Get timestamp of pod ----------")
-		log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
+		//log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
 		log.Print("Get pod unix timestamp: ", pod.GetCreationTimestamp().Unix())
 		log.Print("Get pod hour: ", pod.GetCreationTimestamp().Hour())
 		log.Print("Get pod minute: ", pod.GetCreationTimestamp().Minute())
 		log.Print("Get pod seconds: ", pod.GetCreationTimestamp().Second())
 		log.Print("Get Pod resource limits: ", pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue())
-		log.Print("Get Node resource cpu mili: ", node.Status.Capacity.Cpu().MilliValue())
-		//pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()
-		//node.Status.Capacity.Cpu().AsInt64()
-		resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
-		log.Print("Get Pod resource percentage: ", resourcePercentagePod)
 
-		log.Print("---------- Get timestamp of scheduler instance ----------")
-		log.Print("scheduler timestamp: ", time.Now())
-		log.Print("scheduler unix timestamp: ", time.Now().Unix())
-		log.Print("get scheduler hour: ", time.Now().Hour())
-		log.Print("Get scheduler minute: ", time.Now().Minute())
-		log.Print("Get scheduler second: ", time.Now().Second())
+		//log.Print("---------- Get timestamp of scheduler instance ----------")
+		//log.Print("scheduler timestamp: ", time.Now())
+		//log.Print("scheduler unix timestamp: ", time.Now().Unix())
+		//log.Print("get scheduler hour: ", time.Now().Hour())
+		//log.Print("Get scheduler minute: ", time.Now().Minute())
+		//log.Print("Get scheduler second: ", time.Now().Second())
 
 		log.Print("cpu Limit of node as float is: ", cpulimit)
 
@@ -80,17 +75,24 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var labels = pod.GetLabels()
 		var starttime = time.Now()
 		log.Print(starttime)
-		log.Print("Printing label value: ", labels["realtime"])
+		log.Print("Printing label value: ", labels["realtime"]) //printing whether critical pod or not for debugging purposes
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result { //blocked before 11 or after 20  mind one hour offset
 				// < 12 means blocked before 13:00
-				if labels["realtime"] == "not-critical" && (time.Now().Hour() < 12 || time.Now().Hour() > 20) {
+				// cpulimit is used to reserve cpu time to critical resources
+				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (time.Now().Hour() < 16 || time.Now().Hour() > 20)) {
 					log.Print("can not schedule!")
-					canNotSchedule[node.Name] = err.Error()
 				} else {
+					resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
+					log.Print("cpu Limit of node as float is: ", cpulimit)
+					log.Print("Get Pod resource percentage: ", resourcePercentagePod)
 					log.Print("can schedule!")
+					log.Print("Get pod creation timestamp: ", pod.GetCreationTimestamp())
+					log.Print("Get Node Name: ", pod.GetName())
+					log.Print("Get Labels: ", pod.GetLabels())
+
 					canSchedule = append(canSchedule, node)
 				}
 			}
@@ -113,8 +115,11 @@ func getCPUUtilizatiom() float64 {
 	//block to aquire values
 	cmd := exec.Command("kubectl", "describe", "nodes")
 	stdout, err := cmd.Output()
+	//catch in case the api gets unresponsive some time.
 	if err != nil {
+		var defaultLimit float64 = 1.0 //default to 100 percent usage, esentially blocking until service comes up again
 		log.Print(err.Error())
+		return defaultLimit
 	}
 	// Print the output
 	//log.Print("doing sketchy stuff: ")
@@ -124,13 +129,14 @@ func getCPUUtilizatiom() float64 {
 	//create regex that gets the cpu line
 	//regex that does not work because of instruction set :(
 	//Allocated resources:(.|\n)*cpu(\s)*(\d)*m(\s)*\(\K(\d)*
-	re := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
+	getCpu := regexp.MustCompile("cpu(\\s)*(\\d)*m(\\s)*\\((\\d)*")
 
-	cpuResultConsole := re.FindStringSubmatch(string(stdout))
+	cpuResultConsole := getCpu.FindStringSubmatch(string(stdout))
 	cpuResultRelevantString := cpuResultConsole[0]
 	//extract the percentage value of the cpu utilization
 	cpuResultRelevantString = cpuResultRelevantString[(strings.IndexByte(cpuResultRelevantString, '(') + 1):]
 	var cpuLimit float64
 	cpuLimit, err = strconv.ParseFloat(cpuResultRelevantString, 64)
+	cpuLimit = cpuLimit / 100
 	return cpuLimit
 }

@@ -1,4 +1,4 @@
-echo starting workload generation
+	echo starting workload generation
 indexofpod=0
 current_timestamp=$(date +%s)
 while IFS=, read -r col1 col2 col3 col4
@@ -16,4 +16,4 @@ done < workload.csv
 
 
 #kubectl get pod --field-selector=status.phase==Succeeded #list completed pods
-#kubectl delete pod --field-selector=status.phase==Succeeded #delte completed pods
+#kubectl delete pod --field-selector=status.phase==Succeeded #delete completed pods

@@ -42,6 +42,11 @@ do
    logLine=$logTimeStamp,$logCPUMili,$logCPUPercent,$logCpuPercentPrecise,$logMemoryUsageBytes,$logMemoryUsagePercent,$logcpuMiliReservation,$logcpuPercentReservation,$logcpuPreciseReservation
    echo $logLine >> $logFileName
    echo $logLine
+   
+   sleep 5
+   echo "cleaning of old deployments"
+   kubectl delete pod --field-selector=status.phase==Succeeded #delete completed pods
+   
    elapsed=$(( end_time - start_time ))
    waitToNextMinute
 done
