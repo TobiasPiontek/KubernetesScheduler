@@ -16,5 +16,8 @@ RUN go install -ldflags "-s -w -X main.version=$VERSION" k8s-scheduler-extender-
 
 # runtime image
 FROM gcr.io/google_containers/hyperkube:v1.16.3
+# Image is stored from directory to container directory
 COPY --from=builder /go/bin/k8s-scheduler-extender-example /usr/bin/k8s-scheduler-extender-example
+//Integgrate File with scheduling data
+COPY ./deployScheduler.sh /usr/bin/deployScheduler.sh
 ENTRYPOINT ["k8s-scheduler-extender-example"]
