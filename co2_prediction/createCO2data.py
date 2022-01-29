@@ -3,15 +3,8 @@ import datetime
 
 a = 0
 
-monday = []
-tuesday = []
-wednesday = []
-thursday = []
-friday = []
-saturday = []
-sunday = []
 
-week_array = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+week_array = [[], [], [], [], [], [], []]
 
 day_before = 0  # debug
 counter = 0
@@ -37,7 +30,6 @@ with open('UniGroningen_DE_2018.csv', 'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     next(lines)  # skip the label field
     for row in lines:
-        # print(row[3])
         a = a + 1
         day = datetime.datetime.fromtimestamp(
             int(row[1]) - timezone_unix_factor)  # correction as timestamp is UTC not UTC + 1
@@ -45,27 +37,8 @@ with open('UniGroningen_DE_2018.csv', 'r') as csvfile:
         day_number = day.weekday()
         print("Debug: ", row[co2emmisionrow])
 
-        if day_number == 0:
-            daylist = []
-            monday.append(row[co2emmisionrow])
+        week_array[day_number].append(row[co2emmisionrow])
 
-        elif day_number == 1:
-            tuesday.append(row[co2emmisionrow])
-
-        elif day_number == 2:
-            wednesday.append(row[co2emmisionrow])
-
-        elif day_number == 3:
-            thursday.append(row[co2emmisionrow])
-
-        elif day_number == 4:
-            friday.append(row[co2emmisionrow])
-
-        elif day_number == 5:
-            saturday.append(row[co2emmisionrow])
-
-        elif day_number == 6:
-            sunday.append(row[co2emmisionrow])
 
 # stage for calculating the median weekday values
 
@@ -87,15 +60,8 @@ print(get_day_array(1, 0))
 
 print("next debug block")
 
-median_monday = []
-median_tuesday = []
-median_wednesday = []
-median_thursday = []
-median_friday = []
-median_saturday = []
-median_sunday = []
 
-median_weekday = [median_monday, median_tuesday, median_wednesday, median_thursday, median_friday, median_saturday, median_sunday]
+median_weekday = [[], [], [], [], [], [], []]
 
 for weekday in range(0, len(week_array)): # iterate for all days from
     for day in range(0, int (len(week_array[weekday]) / 24)):
