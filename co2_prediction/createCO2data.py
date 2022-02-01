@@ -75,12 +75,6 @@ for week in range(0, 52):
             print(day_before)
             set_day_array(week, weekday, day_before)
             print(get_day_array(week, weekday))
-
-
-print(get_day_array(0 , 0))
-set_day_array(0, 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-print(get_day_array(0 , 0))
-print(get_day_array(0,1))
 #end data cleaning
 
 print("ending data cleaning")
@@ -89,25 +83,14 @@ print("end of loop!")
 print("total hours: " + str(a))
 print("days: " + str(a / 24))
 
-print(get_day_array(0, 0))
-print(get_day_array(-53, 0))
-print(get_day_array(53, 0))
+# hits with data holes
+#print(get_day_array(16, 5))
+#print(get_day_array(17, 5))
+#print(get_day_array(21, 5))
 
 
 
-print(get_day_array(0, 1))
-print(get_day_array(1, 0))
-
-
-print(get_day_array(16, 5)) #hits with data holes
-print(get_day_array(17, 5))
-print(get_day_array(21, 5))
-
-#
-
-print("next debug block")
-
-
+print("starging average week calculation")
 median_weekday = [[], [], [], [], [], [], []]
 
 for weekday in range(0, len(week_array)): # iterate for all days from
@@ -120,7 +103,7 @@ for weekday in range(0, len(week_array)): # iterate for all days from
 
         average_day_efficiency = []
         for hour in range (0, len(first_week)):
-            average_hour = first_week[hour]*0.1 + second_week[hour]*0.2 + current_week[hour]*0.4 + fourth_week[hour]*0.2 + fifth_week[hour]*0.1
+            average_hour = float(first_week[hour])*0.1 + float(second_week[hour])*0.2 + float(current_week[hour])*0.4 + float(fourth_week[hour])*0.2 + float(fifth_week[hour])*0.1
             average_day_efficiency.append(average_hour)
 
         if day == 0 and weekday == 0:
@@ -128,4 +111,4 @@ for weekday in range(0, len(week_array)): # iterate for all days from
         median_weekday[weekday].append(average_day_efficiency)
 
 print("last output")
-print(median_weekday[0])
+print(median_weekday[0][0])
