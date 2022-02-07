@@ -3,3 +3,4 @@
 /Benchmark_scripts/WorkloadGenerator/*.gwf
 /Benchmark_scripts/WorkloadGenerator/*.csv
 /Benchmark_scripts/LogData/*.csv
+/co2_prediction/*.csv

@@ -110,5 +110,13 @@ for weekday in range(0, len(week_array)): # iterate for all days from
             print(current_week)
         median_weekday[weekday].append(average_day_efficiency)
 
+
 print("last output")
 print(median_weekday[0][0])
+
+print("generating .csv file")
+f = open('./average_co2_emissions.csv', 'w', newline='')
+writer = csv.writer(f, lineterminator="\n")
+for week in range(0, len(week_array)): # iterate for all days from
+    for day in range(0, int (len(week_array[weekday]) / 24)):
+        writer.writerow(median_weekday[week][day])
