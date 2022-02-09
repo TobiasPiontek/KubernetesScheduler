@@ -98,7 +98,9 @@ func main() {
 	colog.Register()
 	level := StringToLevel(os.Getenv("LOG_LEVEL"))
 	log.Print("Log level was set to ", strings.ToUpper(level.String()))
-	log.Print("Testing stuff")
+	log.Print("initialize lookup tables:")
+	initialize_lookup_tables()
+	log.Print("finished initializing lookup tables:")
 	colog.SetMinLevel(level)
 
 	router := httprouter.New()

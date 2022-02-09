@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/csv"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -11,6 +13,8 @@ import (
 	v1 "k8s.io/api/core/v1"
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/apis/extender/v1"
 )
+
+var counter int = 0
 
 type Predicate struct {
 	Name string
@@ -76,6 +80,8 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var starttime = time.Now()
 		log.Print(starttime)
 		log.Print("Printing label value: ", labels["realtime"]) //printing whether critical pod or not for debugging purposes
+		log.Print("printing global variable: ", counter)
+		counter++
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
@@ -108,6 +114,28 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	}
 
 	return &result
+}
+
+func readCsvFile(filePath string) [][]string {
+	f, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal("Unable to read input file "+filePath, err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("Unable to parse file as CSV for "+filePath, err)
+	}
+
+	return records
+}
+
+func initialize_lookup_tables() {
+	log.Print(exec.Command("ls"))
+	records := readCsvFile("../usr/bin/average_co2_emissions.csv")
+	log.Print(records)
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
