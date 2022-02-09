@@ -14,7 +14,7 @@ import (
 	schedulerapi "k8s.io/kubernetes/pkg/scheduler/apis/extender/v1"
 )
 
-var counter int = 0
+var co2_data [][]string
 
 type Predicate struct {
 	Name string
@@ -80,8 +80,6 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var starttime = time.Now()
 		log.Print(starttime)
 		log.Print("Printing label value: ", labels["realtime"]) //printing whether critical pod or not for debugging purposes
-		log.Print("printing global variable: ", counter)
-		counter++
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
@@ -128,14 +126,24 @@ func readCsvFile(filePath string) [][]string {
 	if err != nil {
 		log.Fatal("Unable to parse file as CSV for "+filePath, err)
 	}
-
 	return records
 }
 
 func initialize_lookup_tables() {
 	log.Print(exec.Command("ls"))
-	records := readCsvFile("../usr/bin/average_co2_emissions.csv")
-	log.Print(records)
+	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
+	log.Print(co2_data)
+	log.Print(co2_data[0])
+	log.Print(len(co2_data[0]))
+	log.Print(len(co2_data))
+	today := time.Now()
+	year, week := today.ISOWeek()
+	weekday := (int(today.Weekday()) - 1) % 7
+	log.Print("iso week is: ", week, ", year: ", year)
+	log.Print("weekday is: ", today.Weekday(), ", ", today.Day())
+	log.Print("weekday is: ", weekday )
+	lookupvalue := weekday + (week - 1) * 7
+	log.Print("get index for lookup", lookupvalue)
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
