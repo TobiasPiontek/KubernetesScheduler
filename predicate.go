@@ -138,10 +138,11 @@ func initialize_lookup_tables() {
 	log.Print(co2_data[0])
 	log.Print(len(co2_data[0]))
 	log.Print(len(co2_data))
-	get_current_day()
+	get_co2_time_window()
 }
 
-func get_current_day() {
+//helper method to extract the current day
+func get_current_day_as_float() []float64 {
 	today := time.Now()
 	year, week := today.ISOWeek()
 	weekday := (int(today.Weekday()) - 1) % 7 //conversion between Python and GO weekdays Monday = 0 in Python sunday = 0 in go
@@ -154,14 +155,33 @@ func get_current_day() {
 	//convert the sub string array to a float array
 
 	converted := make([]float64, len(co2_data[lookupvalue]))
-	for index, element := range co2_data[lookupvalue]{
+	for index, element := range co2_data[lookupvalue] {
 		log.Print("Index is: ", index)
 		log.Print("element is: ", element)
 		value, _ := strconv.ParseFloat(element, 64)
 		converted[index] = value
 	}
-	log.Print(converted)
+	return converted
+}
 
+//calculate minimum time window for predicted timeframe
+func get_co2_time_window() (int, int) {
+	var windows_size = 6
+	var current_day = get_current_day_as_float()
+	var co2_sum float64 = 100000000
+	var startindex int = 0
+	for index, _ := range current_day {
+		var co2_sum_new float64 = 0
+		for i := index; i < index+windows_size; i++ {
+			co2_sum_new = co2_sum_new + current_day[i % len(current_day)]
+		}
+		if co2_sum_new < co2_sum {
+			co2_sum = co2_sum_new
+			startindex = index
+		}
+	}
+	log.Print("startindex is: ", startindex)
+	return 0, 0
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
