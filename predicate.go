@@ -114,6 +114,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 	return &result
 }
 
+//simple function to read in a csv file as a 2d list
 func readCsvFile(filePath string) [][]string {
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -129,6 +130,7 @@ func readCsvFile(filePath string) [][]string {
 	return records
 }
 
+//external function call for main, to trigger the csv parsing on startup of the scheduler (only performed once)
 func initialize_lookup_tables() {
 	log.Print(exec.Command("ls"))
 	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
@@ -136,14 +138,30 @@ func initialize_lookup_tables() {
 	log.Print(co2_data[0])
 	log.Print(len(co2_data[0]))
 	log.Print(len(co2_data))
+	get_current_day()
+}
+
+func get_current_day() {
 	today := time.Now()
 	year, week := today.ISOWeek()
-	weekday := (int(today.Weekday()) - 1) % 7
+	weekday := (int(today.Weekday()) - 1) % 7 //conversion between Python and GO weekdays Monday = 0 in Python sunday = 0 in go
 	log.Print("iso week is: ", week, ", year: ", year)
 	log.Print("weekday is: ", today.Weekday(), ", ", today.Day())
-	log.Print("weekday is: ", weekday )
-	lookupvalue := weekday + (week - 1) * 7
+	log.Print("weekday is: ", weekday)
+	lookupvalue := weekday + (week-1)*7
 	log.Print("get index for lookup", lookupvalue)
+
+	//convert the sub string array to a float array
+
+	converted := make([]float64, len(co2_data[lookupvalue]))
+	for index, element := range co2_data[lookupvalue]{
+		log.Print("Index is: ", index)
+		log.Print("element is: ", element)
+		value, _ := strconv.ParseFloat(element, 64)
+		converted[index] = value
+	}
+	log.Print(converted)
+
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
