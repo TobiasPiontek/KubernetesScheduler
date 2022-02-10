@@ -173,7 +173,7 @@ func get_co2_time_window() (int, int) {
 	for index, _ := range current_day {
 		var co2_sum_new float64 = 0
 		for i := index; i < index+windows_size; i++ {
-			co2_sum_new = co2_sum_new + current_day[i % len(current_day)]
+			co2_sum_new = co2_sum_new + current_day[i%len(current_day)]
 		}
 		if co2_sum_new < co2_sum {
 			co2_sum = co2_sum_new
@@ -181,7 +181,7 @@ func get_co2_time_window() (int, int) {
 		}
 	}
 	log.Print("startindex is: ", startindex)
-	return 0, 0
+	return startindex, startindex + windows_size
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
