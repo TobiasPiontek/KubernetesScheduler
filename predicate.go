@@ -134,11 +134,14 @@ func readCsvFile(filePath string) [][]string {
 func initialize_lookup_tables() {
 	log.Print(exec.Command("ls"))
 	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
-	log.Print(co2_data)
-	log.Print(co2_data[0])
-	log.Print(len(co2_data[0]))
-	log.Print(len(co2_data))
-	get_co2_time_window()
+	//log.Print(co2_data)
+	//log.Print(co2_data[0])
+	//log.Print(len(co2_data[0]))
+	//log.Print(len(co2_data))
+	var start int
+	var end int
+	start, end = get_co2_time_window()
+	log.Print("Start: ", start, " End: ", end)
 }
 
 //helper method to extract the current day
@@ -172,7 +175,7 @@ func get_co2_time_window() (int, int) {
 	var startindex int = 0
 	for index, _ := range current_day {
 		var co2_sum_new float64 = 0
-		for i := index; i < index+windows_size; i++ {
+		for i := index; i < index + windows_size; i++ {
 			co2_sum_new = co2_sum_new + current_day[i%len(current_day)]
 		}
 		if co2_sum_new < co2_sum {
@@ -180,7 +183,6 @@ func get_co2_time_window() (int, int) {
 			startindex = index
 		}
 	}
-	log.Print("startindex is: ", startindex)
 	return startindex, startindex + windows_size
 }
 
