@@ -173,9 +173,9 @@ func get_co2_time_window() (int, int) {
 	var current_day = get_current_day_as_float()
 	var co2_sum float64 = 100000000
 	var startindex int = 0
-	for index, _ := range current_day {
+	for index := 0; index < index-windows_size; index++ {
 		var co2_sum_new float64 = 0
-		for i := index; i < index + windows_size; i++ {
+		for i := index; i < index+windows_size; i++ {
 			co2_sum_new = co2_sum_new + current_day[i%len(current_day)]
 		}
 		if co2_sum_new < co2_sum {
