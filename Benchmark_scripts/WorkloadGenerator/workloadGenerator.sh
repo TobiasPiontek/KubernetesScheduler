@@ -14,6 +14,7 @@ do
    sleep $lag_compensate_sleep
 done < workload.csv
 
+#get current timestamp in miliseconds $(date +%s%M)
 
 #kubectl get pod --field-selector=status.phase==Succeeded #list completed pods
 #kubectl delete pod --field-selector=status.phase==Succeeded #delete completed pods

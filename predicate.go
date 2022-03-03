@@ -80,14 +80,27 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var starttime = time.Now()
 		log.Print(starttime)
 		log.Print("Printing label value: ", labels["realtime"]) //printing whether critical pod or not for debugging purposes
+
+		var start_of_co2_window int
+		var end_of_co2_window int
+		start_of_co2_window, end_of_co2_window = get_co2_time_window()
+		log.Print("Start: ", start_of_co2_window, " End: ", end_of_co2_window)
+		log.Print("current time: ", time.Now().Hour())
+
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result { //blocked before 11 or after 20  mind one hour offset
 				// < 12 means blocked before 13:00
 				// cpulimit is used to reserve cpu time to critical resources
-				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (time.Now().Hour() < 16 || time.Now().Hour() > 20)) {
+				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (time.Now().Hour() < start_of_co2_window || time.Now().Hour() > end_of_co2_window)) {
 					log.Print("can not schedule!")
+					if cpulimit > 0.90 {
+						log.Print("Reason for not schedule: CPU reservation limit exceeded!")
+					}
+					if time.Now().Hour() < start_of_co2_window || time.Now().Hour() > end_of_co2_window {
+						log.Print("Reason for not schedule: Out of optimal CO2 time window!")
+					}
 				} else {
 					resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
 					log.Print("cpu Limit of node as float is: ", cpulimit)
@@ -134,14 +147,11 @@ func readCsvFile(filePath string) [][]string {
 func initialize_lookup_tables() {
 	log.Print(exec.Command("ls"))
 	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
+	get_current_day_as_float()
 	//log.Print(co2_data)
 	//log.Print(co2_data[0])
 	//log.Print(len(co2_data[0]))
 	//log.Print(len(co2_data))
-	var start int
-	var end int
-	start, end = get_co2_time_window()
-	log.Print("Start: ", start, " End: ", end)
 }
 
 //helper method to extract the current day
@@ -159,8 +169,7 @@ func get_current_day_as_float() []float64 {
 
 	converted := make([]float64, len(co2_data[lookupvalue]))
 	for index, element := range co2_data[lookupvalue] {
-		log.Print("Index is: ", index)
-		log.Print("element is: ", element)
+		log.Print("Index: ", index, ", Element: ", element)
 		value, _ := strconv.ParseFloat(element, 64)
 		converted[index] = value
 	}
@@ -168,6 +177,8 @@ func get_current_day_as_float() []float64 {
 }
 
 //calculate minimum time window for predicted timeframe
+//returns the start hour and the endhour of the optimal time window as:
+//starttime, endtime
 func get_co2_time_window() (int, int) {
 	var windows_size = 6
 	var current_day = get_current_day_as_float()

@@ -21,7 +21,7 @@ calc() { awk "BEGIN{print $*}"; }
 waitToNextMinute
 while [ $elapsed -lt 86400 ]
 do
-   logTimeStamp=$(date +"%T")
+   logTimeStamp=$(date +"%d %T")
    #get logs from kubectl API
    kubePerformanceOutput=$(kubectl top nodes --use-protocol-buffers)
    kubeReservationOutput=$(kubectl describe nodes | sed -n '/Allocated resources:/,/Events:/{//!p;}' | sed '4q;d')

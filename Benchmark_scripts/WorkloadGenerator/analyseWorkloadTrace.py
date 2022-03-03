@@ -124,17 +124,17 @@ generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
 generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
 
 #generate the average values that get modified
-milicores_total = 1250
+milli_cores_total = 1250   # this values is picked since 750 mcores are system reserved
 maximum_jobs = 70
-avg_utilization = 0.8
+avg_utilization = 0.4
 average_runtime = 600 #10 minutes
 rate_of_critical_jobs = 0.8
 avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
-avg_milicore_per_job = (milicores_total / maximum_jobs) * avg_utilization
+avg_milli_core_per_job = (milli_cores_total / maximum_jobs) * avg_utilization
 
 
 print("avg job interval", avg_job_interval_hour)
-print("Debug", avg_milicore_per_job)
+print("Debug", avg_milli_core_per_job)
 
 
 #Block to write the csv file
@@ -147,15 +147,23 @@ print("start writing workload file...")
 
 time_counter = 0
 while time_counter < 86400: #generate for whole day
+    #calculating adapted values
+    current_hour = int(time_counter / 3600)
+    print("current hour: " + str(current_hour))
+    milli_core_adapted = avg_milli_core_per_job * core_count_normalized[current_hour]
+    runtime_adapted = average_runtime * runtime_normalized[current_hour]
+    job_interval_adapted = avg_job_interval_hour * (1 / job_count_normalized[current_hour])  # invert value, as many jobs per hour mean low latency between job queue intervall
+    print("job interval adapted: " + str(job_interval_adapted))
+
     label = ""
     if random.random() > rate_of_critical_jobs:
-        label="not-critical"
+        label = "not-critical"
     else:
-        label="critical"
-    write_data = [str(int(avg_milicore_per_job)), str(int(average_runtime)), str(int(avg_job_interval_hour)), label]
+        label = "critical"
+    write_data = [str(int(milli_core_adapted)), str(int(runtime_adapted)), str(int(job_interval_adapted)), label]
     print(write_data)
     writer.writerow(write_data)
-    time_counter = int(time_counter) + int(avg_job_interval_hour)
+    time_counter = int(time_counter) + int(job_interval_adapted)
 
 f.close()
 
