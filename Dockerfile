@@ -6,6 +6,8 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
 
+
+
 # build
 WORKDIR /go/src/k8s-scheduler-extender-example
 COPY go.mod .
@@ -20,4 +22,5 @@ FROM gcr.io/google_containers/hyperkube:v1.16.3
 COPY --from=builder /go/bin/k8s-scheduler-extender-example /usr/bin/k8s-scheduler-extender-example
 #Integgrate File with scheduling data
 COPY ./co2_prediction/average_co2_emissions.csv /usr/bin/average_co2_emissions.csv
+
 ENTRYPOINT ["k8s-scheduler-extender-example"]

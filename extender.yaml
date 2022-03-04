@@ -4,6 +4,11 @@ metadata:
   name: my-scheduler
   namespace: kube-system
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pod-benchmark
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -100,6 +105,9 @@ spec:
       - name: my-scheduler-ctr
         image: gcr.io/google_containers/hyperkube:v1.16.3
         imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: Europe/Berlin
         args:
         - kube-scheduler
         - --config=/my-scheduler/config.yaml
@@ -110,6 +118,9 @@ spec:
       - name: my-scheduler-extender-ctr
         image: a/b:c
         imagePullPolicy: Always
+        env:
+        - name: TZ
+          value: Europe/Berlin
         livenessProbe:
           httpGet:
             path: /version

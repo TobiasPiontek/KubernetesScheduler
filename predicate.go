@@ -85,7 +85,9 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var end_of_co2_window int
 		start_of_co2_window, end_of_co2_window = get_co2_time_window()
 		log.Print("Start: ", start_of_co2_window, " End: ", end_of_co2_window)
-		log.Print("current time: ", time.Now().Hour())
+		log.Print("current time system time: ", time.Now().Hour())
+		var hour_utc_plus_one = (time.Now().Hour() + 1) % 24
+		log.Print("current hour utc+1 adapted is: ", hour_utc_plus_one) //used on code level, as changing container time zone did not work
 
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
@@ -93,14 +95,15 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 			if result { //blocked before 11 or after 20  mind one hour offset
 				// < 12 means blocked before 13:00
 				// cpulimit is used to reserve cpu time to critical resources
-				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (time.Now().Hour() < start_of_co2_window || time.Now().Hour() > end_of_co2_window)) {
+				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
 					log.Print("can not schedule!")
 					if cpulimit > 0.90 {
 						log.Print("Reason for not schedule: CPU reservation limit exceeded!")
 					}
-					if time.Now().Hour() < start_of_co2_window || time.Now().Hour() > end_of_co2_window {
+					if hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window {
 						log.Print("Reason for not schedule: Out of optimal CO2 time window!")
 					}
+					canSchedule = append(canSchedule, node) // remove later
 				} else {
 					resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
 					log.Print("cpu Limit of node as float is: ", cpulimit)

@@ -23,7 +23,7 @@ for date in range(1, len(x), int(len(x)/xLabelCount)):
     xlabels.append(x[date])
 
 
-axes=plt
+axes = plt
 
 plt.xticks(rotation = 45)
 plt.xticks(xtics,xlabels)
