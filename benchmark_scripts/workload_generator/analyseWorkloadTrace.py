@@ -126,12 +126,12 @@ generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour
 #generate the average values that get modified
 
 # cluster parameters
-total_millicores = 2000
+total_millicores = 4000
 system_reserved_millicores = 750
 
 #workload calibration parameters
 average_pod_count = 50
-avg_utilization = 0.7
+avg_utilization = 0.6
 average_runtime = 600 #10 minutes
 rate_of_critical_jobs = 0.8 #rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
 

@@ -30,7 +30,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		//log.Print("Get Error: ",err.Error())
 
 		//Block to assign server state variables
-		cpulimit := getCPUUtilizatiom()
+		cpulimit := getCPUUtilization()
 
 		log.Print("---------- Start of Log Print ----------")
 
@@ -201,7 +201,7 @@ func get_co2_time_window() (int, int) {
 }
 
 //This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
-func getCPUUtilizatiom() float64 {
+func getCPUUtilization() float64 {
 	//block to aquire values
 	cmd := exec.Command("kubectl", "describe", "nodes")
 	stdout, err := cmd.Output()
