@@ -86,10 +86,10 @@ print("job count per hour", job_count)
 print("time axis", time_of_day)
 
 
-def generate_bar_plot(xaxis, yaxis, title):
+def generate_bar_plot(x_axis, y_axis, title):
     fig = plt.figure()
     fig.canvas.manager.set_window_title(title)
-    plt.bar(xaxis,yaxis)
+    plt.bar(x_axis, y_axis)
     plt.show()
 
 
@@ -124,46 +124,80 @@ generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
 generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
 
 #generate the average values that get modified
-milli_cores_total = 1250   # this values is picked since 750 mcores are system reserved
-maximum_jobs = 70
-avg_utilization = 0.4
+
+# cluster parameters
+total_millicores = 2000
+system_reserved_millicores = 750
+
+#workload calibration parameters
+average_pod_count = 50
+avg_utilization = 0.7
 average_runtime = 600 #10 minutes
-rate_of_critical_jobs = 0.8
-avg_job_interval_hour = float(3600) / (float(maximum_jobs) * avg_utilization * (3600 / float(average_runtime)))
-avg_milli_core_per_job = (milli_cores_total / maximum_jobs) * avg_utilization
+rate_of_critical_jobs = 0.8 #rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
+
+#parameter for benchmark calibration
+start_time = 1 #hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
+
+#pre calculated values for later use
+milli_cores_available = total_millicores - system_reserved_millicores   # this values is picked since 750 mcores are system reserved
+avg_job_interval_hour = float(3600) / (float(average_pod_count) * avg_utilization * (3600 / float(average_runtime)))
+avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
 
 
 print("avg job interval", avg_job_interval_hour)
 print("Debug", avg_milli_core_per_job)
 
 
-#Block to write the csv file
 
+print("generating prediction grap...")
+predicted_load = []
+predicted_pod_count = []
+predicted_hour_timestamp = []
+milli_core_adapted = []
+runtime_adapted = []
+job_interval_adapted = []
+file_prediction = open('workload_prediction.csv', 'w', newline='')
+writer_prediction = csv.writer(file_prediction, lineterminator="\n") #use linux style line endings
+for x in range(0, 24):
+    milli_core_adapted.append(avg_milli_core_per_job * core_count_normalized[x])
+    runtime_adapted.append(average_runtime * runtime_normalized[x])
+    job_interval_adapted.append(int(avg_job_interval_hour * (1 / job_count_normalized[x]))) # invert value, as many jobs per hour mean low latency between job queue intervall
+    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_millicores) / total_millicores)
+    predicted_pod_count.append(runtime_adapted[x] / job_interval_adapted[x])
+    predicted_hour_timestamp.append(x)
+    row = [predicted_load[x]]
+    writer_prediction.writerow(row)
+
+file_prediction.close()
+generate_bar_plot(predicted_hour_timestamp, predicted_load, "Unoptimized load prediction")
+generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "Predicted Pod count per hour")
+
+
+
+#Block to write the csv file
+print("start writing workload file...")
 f = open('workload.csv', 'w', newline='')
 writer = csv.writer(f, lineterminator="\n") #use linux style line endings
-
-
-print("start writing workload file...")
 
 time_counter = 0
 while time_counter < 86400: #generate for whole day
     #calculating adapted values
     current_hour = int(time_counter / 3600)
-    print("current hour: " + str(current_hour))
-    milli_core_adapted = avg_milli_core_per_job * core_count_normalized[current_hour]
-    runtime_adapted = average_runtime * runtime_normalized[current_hour]
-    job_interval_adapted = avg_job_interval_hour * (1 / job_count_normalized[current_hour])  # invert value, as many jobs per hour mean low latency between job queue intervall
-    print("job interval adapted: " + str(job_interval_adapted))
+    adapted_hour = (current_hour + start_time) % 24
+
+
+    print("current hour: " + str(adapted_hour))
+    print("job interval adapted: " + str(job_interval_adapted[adapted_hour]))
 
     label = ""
     if random.random() > rate_of_critical_jobs:
         label = "not-critical"
     else:
         label = "critical"
-    write_data = [str(int(milli_core_adapted)), str(int(runtime_adapted)), str(int(job_interval_adapted)), label]
+    write_data = [str(int(milli_core_adapted[adapted_hour])), str(int(runtime_adapted[adapted_hour])), str(int(job_interval_adapted[adapted_hour])), label]
     print(write_data)
     writer.writerow(write_data)
-    time_counter = int(time_counter) + int(job_interval_adapted)
+    time_counter = int(time_counter) + int(job_interval_adapted[adapted_hour])
 
 f.close()
 

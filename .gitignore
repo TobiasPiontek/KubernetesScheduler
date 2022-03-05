@@ -1,6 +1,6 @@
-/Benchmark_scripts/*.csv
-/Benchmark_scripts/.idea/*
-/Benchmark_scripts/WorkloadGenerator/*.gwf
-/Benchmark_scripts/WorkloadGenerator/*.csv
-/Benchmark_scripts/LogData/*.csv
+/benchmark_scripts/*.csv
+/benchmark_scripts/.idea/*
+/benchmark_scripts/workload_generator/*.gwf
+/benchmark_scripts/workload_generator/*.csv
+/benchmark_scripts/log_data/*.csv
 /co2_prediction/UniGroningen_DE_2018.csv
