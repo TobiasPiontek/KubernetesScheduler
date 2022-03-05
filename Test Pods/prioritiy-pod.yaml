@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: NAME_LABEL
+  name: test-pod-two
+  labels:
+    realtime: critical
 spec:
   schedulerName: my-scheduler
   containers:
   - name: nginx
     image: nginx
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "100m"
     ports:
-    - containerPort: 80
+    - containerPort: 81
+  priorityClassName: critical

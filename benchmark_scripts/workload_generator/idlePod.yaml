@@ -8,13 +8,14 @@ metadata:
 spec:
   schedulerName: my-scheduler
   containers:
-  - name: nginx
+  - name: sleep-container
     image: perl
-    command: ["sleep",  "TIMEOUT_DURATION"]
+    command: ["sleep", "TIMEOUT_DURATION"]
     resources:
       requests:
         memory: "8Mi"
         cpu: "CPU_MILICORESm"
     ports:
     - containerPort: 80
+  priorityClassName: CRITICAL-LEVEL
   restartPolicy: Never

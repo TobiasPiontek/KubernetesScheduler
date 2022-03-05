@@ -12,5 +12,9 @@ sleep 5
 echo "create new deployment on Kubernetes"
 echo $(sed 's/a\/b:c/'$(echo "${IMAGE}" | sed 's/\//\\\//')'/' extender.yaml | kubectl apply -f -)
 echo "waiting for deployment to come online"
-sleep 30
-kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -f
+sleep 10
+while true
+do
+	kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -f
+	sleep 5
+done

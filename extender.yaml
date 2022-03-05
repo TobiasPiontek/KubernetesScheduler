@@ -9,6 +9,22 @@ kind: Namespace
 metadata:
   name: pod-benchmark
 ---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: critical
+value: 100
+globalDefault: true
+description: "priority class used for pods with real time requirement"
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: not-critical
+value: 0
+globalDefault: false
+description: "priority class used for pods that can be shifted in time for co2 reduction"
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
