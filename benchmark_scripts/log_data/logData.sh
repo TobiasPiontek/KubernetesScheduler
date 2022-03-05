@@ -1,4 +1,9 @@
 logFileName="utilization-logs.csv"
+#set certain time for benchmark start
+targetTime="today 22:18" #can also be tomorrow
+echo "$(date) sleeping until: $targetTime"
+sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
+
 #calculate the remaining time to queue the next log api call precisely
 function waitToNextMinute {
    currentTime=$(date +%s)
@@ -18,7 +23,7 @@ echo "waiting for clear minute"
 echo "Date,CPUMili,CPUPercent,CpuPercentPrecise,MemoryBytesUsage,MemoryPercentUsage"
 calc() { awk "BEGIN{print $*}"; }
 
-waitToNextMinute
+#waitToNextMinute  #not needed since time trigger is used now
 while [ $elapsed -lt 86400 ]
 do
    logTimeStamp=$(date +"%a %T")

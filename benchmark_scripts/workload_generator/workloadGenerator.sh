@@ -1,4 +1,9 @@
-	echo starting workload generation
+#set certain time for benchmark start
+targetTime="today 22:18" #can also be tomorrow
+echo "$(date) sleeping until: $targetTime"
+sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
+
+echo starting workload generation
 indexofpod=0
 current_timestamp=$(date +%s)
 while IFS=, read -r col1 col2 col3 col4
@@ -16,5 +21,6 @@ done < workload.csv
 
 #get current timestamp in miliseconds $(date +%s%M)
 
+#Both commands can be used to manual clear of pods after a run (now works automatically after redeploying the scheduler
 #kubectl get pod --field-selector=status.phase==Succeeded #list completed pods
 #kubectl delete pod --field-selector=status.phase==Succeeded #delete completed pods
