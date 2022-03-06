@@ -16,6 +16,7 @@ sleep 10
 #hook into the scheduler extender logs to see scheduling decision meta data
 while true
 do
+	echo "..."
 	kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -f
 	sleep 5
 done

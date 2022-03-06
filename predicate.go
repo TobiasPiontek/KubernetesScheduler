@@ -15,6 +15,7 @@ import (
 )
 
 var co2_data [][]string
+var workload_data_prediction []float64
 
 type Predicate struct {
 	Name string
@@ -89,21 +90,26 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		var hour_utc_plus_one = (time.Now().Hour() + 1) % 24
 		log.Print("current hour utc+1 adapted is: ", hour_utc_plus_one) //used on code level, as changing container time zone did not work
 
+		var workloadlimit = 0.95 - workload_data_prediction[hour_utc_plus_one]*0.1
+		log.Print("workload for current hour is: ", workload_data_prediction[hour_utc_plus_one])
+		log.Print("Current workload prediction is: ", workloadlimit)
+
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result { //blocked before 11 or after 20  mind one hour offset
 				// < 12 means blocked before 13:00
 				// cpulimit is used to reserve cpu time to critical resources
-				if labels["realtime"] == "not-critical" && (cpulimit > 0.90 || (hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
+				if labels["realtime"] == "not-critical" && (cpulimit > workloadlimit || (hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
 					log.Print("can not schedule!")
-					if cpulimit > 0.90 {
+					if cpulimit > workloadlimit {
 						log.Print("Reason for not schedule: CPU reservation limit exceeded!")
+						log.Print("Limit currently is: ", workloadlimit)
 					}
 					if hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window {
 						log.Print("Reason for not schedule: Out of optimal CO2 time window!")
 					}
-					canSchedule = append(canSchedule, node) // remove later
+					//canSchedule = append(canSchedule, node) // remove later
 				} else {
 					resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
 					log.Print("cpu Limit of node as float is: ", cpulimit)
@@ -146,11 +152,25 @@ func readCsvFile(filePath string) [][]string {
 	return records
 }
 
+func read_workload_prediction(filePath string) []float64 {
+	var workload_data [][]string
+	workload_data = readCsvFile(filePath)
+	workload_data_float := make([]float64, len(workload_data))
+	for i := 0; i < len(workload_data); i++ {
+		workload_data_float[i], _ = strconv.ParseFloat(workload_data[i][0], 64)
+	}
+	return workload_data_float
+}
+
 //external function call for main, to trigger the csv parsing on startup of the scheduler (only performed once)
 func initialize_lookup_tables() {
 	log.Print(exec.Command("ls"))
 	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
 	get_current_day_as_float()
+	var start, end = get_co2_time_window()
+	log.Print("time window of today is: ", start, ", to: ", end)
+	workload_data_prediction = read_workload_prediction("../usr/bin/workload_prediction.csv")
+	//log.Print(workload_data_prediction)
 	//log.Print(co2_data)
 	//log.Print(co2_data[0])
 	//log.Print(len(co2_data[0]))
@@ -161,12 +181,13 @@ func initialize_lookup_tables() {
 func get_current_day_as_float() []float64 {
 	today := time.Now()
 	year, week := today.ISOWeek()
-	weekday := (int(today.Weekday()) - 1) % 7 //conversion between Python and GO weekdays Monday = 0 in Python sunday = 0 in go
+
+	weekday := (int((today.Day() + 1) % 7)) //conversion between Python and GO weekdays Monday = 0 in Python sunday = 0 in go
 	log.Print("iso week is: ", week, ", year: ", year)
 	log.Print("weekday is: ", today.Weekday(), ", ", today.Day())
 	log.Print("weekday is: ", weekday)
 	lookupvalue := weekday + (week-1)*7
-	log.Print("get index for lookup", lookupvalue)
+	log.Print("get index for lookup: ", lookupvalue)
 
 	//convert the sub string array to a float array
 
