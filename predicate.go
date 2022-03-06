@@ -164,9 +164,9 @@ func read_workload_prediction(filePath string) []float64 {
 
 //external function call for main, to trigger the csv parsing on startup of the scheduler (only performed once)
 func initialize_lookup_tables() {
-	log.Print(exec.Command("ls"))
+	//log.Print(exec.Command("ls"))
 	co2_data = readCsvFile("../usr/bin/average_co2_emissions.csv")
-	get_current_day_as_float()
+	//get_current_day_as_float()
 	var start, end = get_co2_time_window()
 	log.Print("time window of today is: ", start, ", to: ", end)
 	workload_data_prediction = read_workload_prediction("../usr/bin/workload_prediction.csv")
@@ -187,16 +187,17 @@ func get_current_day_as_float() []float64 {
 	log.Print("weekday is: ", today.Weekday(), ", ", today.Day())
 	log.Print("weekday is: ", weekday)
 	lookupvalue := weekday + (week-1)*7
-	log.Print("get index for lookup: ", lookupvalue)
+	log.Print("get index for lookup: ", lookupvalue, " , Excel row: ", lookupvalue+1)
 
 	//convert the sub string array to a float array
 
 	converted := make([]float64, len(co2_data[lookupvalue]))
 	for index, element := range co2_data[lookupvalue] {
-		log.Print("Index: ", index, ", Element: ", element)
+		//log.Print("Index: ", index, ", Element: ", element)
 		value, _ := strconv.ParseFloat(element, 64)
 		converted[index] = value
 	}
+	log.Print("start CO2 value of day: ", converted[0])
 	return converted
 }
 

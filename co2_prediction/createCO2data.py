@@ -1,6 +1,12 @@
 import csv
 import datetime
 
+file_to_use = 'Germany_CO2_Signal_2018.csv'
+
+co2_emission_column = 3
+unix_timestamp_column = 1
+
+
 a = 0
 
 
@@ -9,7 +15,7 @@ week_array = [[], [], [], [], [], [], []]
 day_before = 0  # debug
 counter = 0
 
-print("start of proggram")
+print("start of program")
 
 
 # nth-day = the weekday with 0 = monday 6 = sunday
@@ -22,6 +28,7 @@ def get_day_array(nth_day, weekday):
         resultday.append(week_day_hours[x])
     return resultday
 
+
 def set_day_array(nth_day, weekday, hourLog):
     week_day_hours = week_array[int(weekday)]
     startindex = int(nth_day * 24) % len(week_day_hours)
@@ -29,30 +36,26 @@ def set_day_array(nth_day, weekday, hourLog):
     for x in range(startindex, endindex):
         week_array[weekday][x] = hourLog[x-startindex]
 
+# factor is necessary, as the unix timestamp is not standard compliant as timezone is set to UTC + 1
+timezone_unix_factor = 3600
 
-timezone_unix_factor = 3600  # factor is necessary, as the unix timestamp is not standard compliant as timeszone is set to UTC + 1
-co2emmisionrow = 3
-# print(datetime.datetime.fromtimestamp(1514764800).hour)
-with open('UniGroningen_DE_2018.csv', 'r') as csvfile:
+with open(file_to_use, 'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     next(lines)  # skip the label field
     for row in lines:
         a = a + 1
         day = datetime.datetime.fromtimestamp(
-            int(row[1]) - timezone_unix_factor)  # correction as timestamp is UTC not UTC + 1
+            int(row[unix_timestamp_column]) - timezone_unix_factor)  # correction as timestamp is UTC not UTC + 1
 
         day_number = day.weekday()
-        #print("Debug: ", row[co2emmisionrow])
-        week_array[day_number].append(row[co2emmisionrow])
+        week_array[day_number].append(row[co2_emission_column])
 
-
-# data cleansing
 
 print("starting data cleaning")
 
+days_fixed = 0
 for week in range(0, 52):
     for weekday in range(0, 7):
-        print(week, "," , weekday)
         day_hours = get_day_array(week, weekday)
         found = False
         for hour in day_hours:
@@ -60,6 +63,8 @@ for week in range(0, 52):
                 found = True
 
         if found:
+            days_fixed = days_fixed + 1
+            print(week, ",", weekday)
             print("missing value found!")
             print(get_day_array(week, weekday))
             past_weekday = None
@@ -75,8 +80,8 @@ for week in range(0, 52):
             print(day_before)
             set_day_array(week, weekday, day_before)
             print(get_day_array(week, weekday))
-#end data cleaning
 
+print(days_fixed, "days fixed!")
 print("ending data cleaning")
 
 print("end of loop!")
@@ -89,8 +94,7 @@ print("days: " + str(a / 24))
 #print(get_day_array(21, 5))
 
 
-
-print("starging average week calculation")
+print("starting average week calculation")
 median_weekday = [[], [], [], [], [], [], []]
 
 for weekday in range(0, len(week_array)): # iterate for all days from
@@ -118,5 +122,5 @@ print("generating .csv file")
 f = open('./average_co2_emissions.csv', 'w', newline='')
 writer = csv.writer(f, lineterminator="\n")
 for week in range(0, len(week_array)): # iterate for all days from
-    for day in range(0, int (len(week_array[weekday]) / 24)):
+    for day in range(0, int(len(week_array[week]) / 24)):
         writer.writerow(median_weekday[week][day])
