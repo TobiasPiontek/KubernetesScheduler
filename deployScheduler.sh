@@ -1,10 +1,11 @@
 echo "starting deployment process"
-IMAGE=tobpio/schedulerextender
+#fill in the name of a docker hub Repository to push to (needs to be created and logged in in local docker account)
+IMAGE=tobpio/schedulerextender 
 echo "building docker image"
-echo $(docker build . -t tobpio/schedulerextender:latest)
+echo $(docker build . -t ${IMAGE}:latest)
 
 echo "uploading to docker hub"
-echo $(docker push tobpio/schedulerextender)
+echo $(docker push ${IMAGE})
 
 echo "delete old deployment on Kubernetes"
 echo $(sed 's/a\/b:c/'$(echo "${IMAGE}" | sed 's/\//\\\//')'/' extender.yaml | kubectl delete -f -)
