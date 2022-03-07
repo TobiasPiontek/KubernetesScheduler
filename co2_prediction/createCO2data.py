@@ -1,10 +1,10 @@
 import csv
 import datetime
 
-file_to_use = 'Germany_CO2_Signal_2018.csv'
+file_to_use = 'Germany_CO2_Signal_2020.csv'
 
-co2_emission_column = 3
-unix_timestamp_column = 1
+co2_emission_column = 5     # 2018 column = 3, 2020 & 2021 = 5
+unix_timestamp_column = 3   # 2018 column = 1, 2020 & 2021 = 3
 
 
 a = 0
