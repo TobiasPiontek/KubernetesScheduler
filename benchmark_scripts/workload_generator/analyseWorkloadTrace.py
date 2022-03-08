@@ -167,7 +167,7 @@ for x in range(0, 24):
     writer_prediction.writerow(row)
 
 file_prediction.close()
-generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load prediction", "hour", "cluster utilization in %")
+generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load prediction", "hour", "predicted cluster utilization")
 generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "predicted pod count per hour", "hour", "average concurrent pods")
 
 

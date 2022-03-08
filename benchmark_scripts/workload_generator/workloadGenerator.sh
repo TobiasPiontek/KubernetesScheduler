@@ -1,5 +1,5 @@
 #set certain time for benchmark start
-targetTime="today 22:58" #can also be tomorrow
+targetTime="today 16:00" #can also be tomorrow
 echo "$(date) sleeping until: $targetTime"
 sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 

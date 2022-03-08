@@ -1,8 +1,8 @@
 logFileName="utilization-logs.csv"
 #set certain time for benchmark start
-targetTime="today 22:18" #can also be tomorrow
-echo "$(date) sleeping until: $targetTime"
-sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
+#targetTime="today 15:50" #can also be tomorrow
+#echo "$(date) sleeping until: $targetTime"
+#sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 
 #calculate the remaining time to queue the next log api call precisely
 function waitToNextMinute {
@@ -23,7 +23,7 @@ echo "waiting for clear minute"
 echo "Date,CPUMili,CPUPercent,CpuPercentPrecise,MemoryBytesUsage,MemoryPercentUsage"
 calc() { awk "BEGIN{print $*}"; }
 
-#waitToNextMinute  #not needed since time trigger is used now
+waitToNextMinute  #not needed since time trigger is used now
 while [ $elapsed -lt 86400 ]
 do
    logTimeStamp=$(date +"%a %T")
@@ -50,7 +50,7 @@ do
    
    sleep 5
    echo "cleaning of old deployments"
-   kubectl delete pod --field-selector=status.phase==Succeeded #delete completed pods
+   kubectl delete pod --field-selector=status.phase==Succeeded --namespace pod-benchmark #delete completed pods
    
    elapsed=$(( end_time - start_time ))
    waitToNextMinute
