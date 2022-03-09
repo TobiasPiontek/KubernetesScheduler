@@ -6,7 +6,7 @@ metadata:
   labels:
     realtime: CRITICAL-LEVEL
 spec:
-  schedulerName: my-scheduler
+  schedulerName: SCHEDULER-IMPLEMENTATION
   containers:
   - name: sleep-container
     image: perl

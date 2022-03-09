@@ -1,5 +1,7 @@
 #set certain time for benchmark start
-targetTime="today 16:00" #can also be tomorrow
+targetTime="now" #can also be tomorrow today 16:00
+#custom scheduler = "my-scheduler" default scheduler = "default-scheduler"
+schedulerToUse="default-scheduler"
 echo "$(date) sleeping until: $targetTime"
 sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 
@@ -9,7 +11,7 @@ current_timestamp=$(date +%s)
 while IFS=, read -r col1 col2 col3 col4
 do
    podname="testpod$indexofpod"
-   cat idlePod.yaml | sed "s/"NAME_LABEL"/${podname}/g" | sed "s/"TIMEOUT_DURATION"/${col2}/g" | sed "s/"CPU_MILICORES"/${col1}/g" | sed "s/"CRITICAL-LEVEL"/${col4}/g" |  kubectl apply -f -
+   cat idlePod.yaml | sed "s/"NAME_LABEL"/${podname}/g" | sed "s/"TIMEOUT_DURATION"/${col2}/g" | sed "s/"CPU_MILICORES"/${col1}/g" | sed "s/"CRITICAL-LEVEL"/${col4}/g" | sed "s/"SCHEDULER-IMPLEMENTATION"/${schedulerToUse}/g" |  kubectl apply -f -
    #echo $(cat idlePod.yaml | sed "s/"NAME_LABEL"/${podname}/g" | sed "s/"TIMEOUT_DURATION"/${col2}/g" | sed "s/"CPU_MILICORES"/${col1}/g")
    echo "$(date), Performance values: cpumili: $col1, length: $col2, jobdensity: $col3, critial-level: $col4"
    indexofpod=$((indexofpod+1))
