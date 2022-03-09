@@ -1,8 +1,8 @@
 logFileName="utilization-logs.csv"
 #set certain time for benchmark start
-#targetTime="today 15:50" #can also be tomorrow
-#echo "$(date) sleeping until: $targetTime"
-#sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
+targetTime="today 15:50" #can also be tomorrow/today with time or simply now for immediate start
+echo "$(date) sleeping until: $targetTime"
+sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 
 #calculate the remaining time to queue the next log api call precisely
 function waitToNextMinute {
