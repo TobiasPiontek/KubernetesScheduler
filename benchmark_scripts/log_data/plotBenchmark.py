@@ -161,3 +161,41 @@ plt.ylabel('time of day in h')
 plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)))
 plt.xlim(0, max(co2_emission_time))
 plt.show()
+
+
+co2_unoptimized_sum = 0.0
+co2_unoptimized = []
+
+co2_optimized_sum = 0.0
+co2_optimized = []
+
+
+# Block to calculate total CO2 emission
+for index in range(0, len(power_consumption_of_unoptimized_cluster)):
+    co2_hour_index = (int(index / 60) + benchmark_run_start_hour) % 24  # create for lookup
+    print(str(co2_hour_index) + ", " + str(index))
+    power_consumption_of_optimized_cluster.__getitem__(index)
+
+    co2_unoptimized_sum = co2_unoptimized_sum + power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index]/60
+    co2_unoptimized.append(co2_unoptimized_sum)
+
+    co2_optimized_sum = co2_optimized_sum + power_consumption_of_optimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index]/60
+    co2_optimized.append(co2_optimized_sum)
+
+
+print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
+print("CO2 optimized emissions: " + str(co2_optimized_sum))
+print(co2_unoptimized)
+
+plt.plot(time_utilization_graph, co2_unoptimized, color='r', linestyle='solid', label="co2 emissions unoptimized")
+plt.plot(time_utilization_graph, co2_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
+plt.title('CO2 emissions of day', fontsize=20)
+plt.grid()
+plt.legend()
+plt.xticks(rotation=20)
+plt.xticks(x_tics, x_labels)
+plt.xlabel('CO2 emissions')
+plt.ylabel('time')
+plt.ylim(0, max(co2_unoptimized_sum, co2_optimized_sum))
+plt.xlim([0, len(time_utilization_graph) - 1])
+plt.show()
