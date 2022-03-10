@@ -11,6 +11,7 @@ max_power_watt = 597
 
 file_to_analyze = 'utilization-logs.csv'
 
+
 # Function to calculate power consumption
 # https://dl.acm.org/doi/pdf/10.1145/1273440.1250665 page 15 Estimating Server Power Usage
 def power_estimation(percentage):
@@ -25,7 +26,7 @@ with open(file_to_analyze, 'r') as csvfile:
         i = i+1
         x.append(row[0][:-3])
         print(row[7])
-        print("testingdex: " + str(i))
+        print("test index: " + str(i))
         print(float(row[8]))
         y.append(float(row[8]))
   
@@ -80,7 +81,6 @@ for i in range(0, 11):
 
 
 plt.clf()
-# plt.plot(x, y, color='b', linestyle='solid', label="CPU reservation")
 plt.ylim(0, max(power_consumption_list))
 plt.xlim(0, max(utilization_list))
 plt.title('Utilization to power transition model', fontsize=20)
