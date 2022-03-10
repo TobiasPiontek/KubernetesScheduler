@@ -185,7 +185,8 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
 
 print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
 print("CO2 optimized emissions: " + str(co2_optimized_sum))
-print(co2_unoptimized)
+print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)))
+
 
 plt.plot(time_utilization_graph, co2_unoptimized, color='r', linestyle='solid', label="co2 emissions unoptimized")
 plt.plot(time_utilization_graph, co2_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
