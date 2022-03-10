@@ -10,8 +10,8 @@ max_power_watt = 597
 
 
 # This block contains parameters for co2 efficiency analaysis
-# first run dayindex = 65
-index_used_in_run = 65  # is generated at start of scheduler initialization
+# first run day index = 65
+index_used_in_run = 65  # is generated at start of day in scheduler initialization
 benchmark_run_start_hour = 16  # hour, at which the scenario is started
 
 
@@ -20,7 +20,6 @@ benchmark_run_start_hour = 16  # hour, at which the scenario is started
 def power_estimation(percentage):
     scaling_power = max_power_watt-idle_power_watt
     return idle_power_watt + scaling_power*percentage
-
 
 
 def analyse_load_graph(file_to_analyze):
@@ -62,7 +61,7 @@ axes = plt
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
-plt.xlabel('Times')
+plt.xlabel('time')
 plt.ylabel('CPU Reservation in %')
 plt.title('Kubernetes Cluster cpu reservation', fontsize=20)
 plt.grid()
@@ -73,15 +72,30 @@ plt.show()
 
 
 # calculate graph for power consumption
+def analyse_power_consumption(cpu_utilization):
+    power_consumption_of_cluster = []
+    for cluster_utilization_measured in cpu_utilization:
+        power_consumption_of_cluster.append(power_estimation(cluster_utilization_measured/100))
+    return power_consumption_of_cluster
 
-power_consumption_of_cluster = []
-for cluster_utilization_measured in cpu_utilization:
-    power_consumption_of_cluster.append(power_estimation(cluster_utilization_measured/100))
 
-plt.plot(time_utilization_graph, power_consumption_of_cluster)
+power_consumption_of_unoptimized_cluster = analyse_power_consumption(unoptimized)
+power_consumption_of_optimized_cluster = analyse_power_consumption(optimized)
+
+print("debug")
+print(power_consumption_of_unoptimized_cluster)
+
+plt.plot(time_utilization_graph, power_consumption_of_unoptimized_cluster, color='r', linestyle='solid', label="unoptimized power consumption")
+plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='g', linestyle='solid', label="optimized power consumption")
+
+# plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, "test2")
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
-plt.ylim(0, 600)
+plt.ylim(0, max_power_watt)
+plt.xlim([0, len(time_utilization_graph) - 1])
+plt.xlabel('time')
+plt.ylabel('cluster power consumption in watt')
+plt.legend()
 plt.grid()
 plt.show()
 
@@ -116,7 +130,6 @@ with open("../../co2_prediction/Germany_CO2_Signal_2021.csv", 'r') as csvfile:
     next(lines)  # skip header
     for skip in range(0, index_used_in_run*24):
         next(lines)
-    print("next(lines)")
     time_window = 0
     for row in lines:
         real_co2_emission_data.append(float(row[5]))
@@ -126,11 +139,25 @@ with open("../../co2_prediction/Germany_CO2_Signal_2021.csv", 'r') as csvfile:
         if time_window > 23:
             break
 
-plt.clf()
-plt.plot(co2_emission_time, real_co2_emission_data)
+co2_prediction_data = []
+with open("../../co2_prediction/average_co2_emissions.csv", 'r') as csvfile:
+    co2_prediction_data_string = []
+    lines = csv.reader(csvfile, delimiter=',')
+    for skip in range(0, index_used_in_run):
+        next(lines)
+    co2_prediction_data_string = next(lines)
+    for element in co2_prediction_data_string:
+        co2_prediction_data.append(float(element))
+
+
+# plt.clf()
+plt.plot(co2_emission_time, real_co2_emission_data, color='r', linestyle='solid', label="co2 emission curve")
+plt.plot(co2_emission_time, co2_prediction_data, color='g', linestyle='solid', label="co2 prediction curve")
 plt.title('CO2 efficiency for day', fontsize=20)
+plt.grid()
+plt.legend()
 plt.xlabel('CO2/kw')
 plt.ylabel('time of day in h')
-plt.ylim(0, max(real_co2_emission_data))
+plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)))
 plt.xlim(0, max(co2_emission_time))
 plt.show()
