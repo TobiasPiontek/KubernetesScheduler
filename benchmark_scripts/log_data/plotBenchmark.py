@@ -9,6 +9,12 @@ y = []
 idle_power_watt = 212
 max_power_watt = 597
 
+
+# This block contains parameters for co2 efficiency analaysis
+# first run dayindex = 65
+index_used_in_run = 65  # is generated at start of scheduler initialization
+benchmark_run_start_hour = 16  # hour, at which the scenario is started
+
 file_to_analyze = 'utilization-logs.csv'
 
 
@@ -89,4 +95,32 @@ plt.ylabel('cluster power consumption in watt')
 plt.grid()
 
 plt.plot(utilization_list, power_consumption_list)
+plt.show()
+
+
+# read co2 efficiency graph and calculate
+real_co2_emission_data = []
+co2_emission_time = []
+with open("../../co2_prediction/Germany_CO2_Signal_2021.csv", 'r') as csvfile:
+    lines = csv.reader(csvfile, delimiter=',')
+    next(lines)  # skip header
+    for skip in range(0, index_used_in_run*24):
+        next(lines)
+    print("next(lines)")
+    time_window = 0
+    for row in lines:
+        real_co2_emission_data.append(float(row[5]))
+        co2_emission_time.append(time_window)
+        time_window = time_window + 1
+        print(row[5])
+        if time_window > 23:
+            break
+
+plt.clf()
+plt.plot(co2_emission_time, real_co2_emission_data)
+plt.title('CO2 efficiency for day', fontsize=20)
+plt.xlabel('CO2/kw')
+plt.ylabel('time of day in h')
+plt.ylim(0, max(real_co2_emission_data))
+plt.xlim(0, max(co2_emission_time))
 plt.show()

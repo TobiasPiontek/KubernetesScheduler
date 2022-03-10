@@ -25,9 +25,9 @@ for x in range(0, interval_count):
 with open("anon_jobs.gwf") as file:
     tsv_file = csv.reader(file, delimiter="\t")
     # skip the header part
-    fieldcount = 0
-    while int(fieldcount) < 29:
-        fieldcount = int(len(next(tsv_file)))
+    field_count = 0
+    while int(field_count) < 29:
+        field_count = int(len(next(tsv_file)))
 
     # iterate over .gwf data
 
