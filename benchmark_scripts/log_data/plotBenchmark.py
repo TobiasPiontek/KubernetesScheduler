@@ -4,8 +4,7 @@ import csv
 
 xLabelCount = 12
 
-x = []
-y = []
+time_utilization_graph = []
 idle_power_watt = 212
 max_power_watt = 597
 
@@ -15,8 +14,6 @@ max_power_watt = 597
 index_used_in_run = 65  # is generated at start of scheduler initialization
 benchmark_run_start_hour = 16  # hour, at which the scenario is started
 
-file_to_analyze = 'utilization-logs.csv'
-
 
 # Function to calculate power consumption
 # https://dl.acm.org/doi/pdf/10.1145/1273440.1250665 page 15 Estimating Server Power Usage
@@ -25,25 +22,39 @@ def power_estimation(percentage):
     return idle_power_watt + scaling_power*percentage
 
 
-i = 0
-with open(file_to_analyze, 'r') as csvfile:
-    lines = csv.reader(csvfile, delimiter=',')
-    for row in lines:
-        i = i+1
-        x.append(row[0][:-3])
-        print(row[7])
-        print("test index: " + str(i))
-        print(float(row[8]))
-        y.append(float(row[8]))
-  
-plt.plot(x, y, color='b', linestyle='solid', label="CPU reservation")
+
+def analyse_load_graph(file_to_analyze):
+    time_utilization_graph.clear()
+    i = 0
+    load = []
+    with open(file_to_analyze, 'r') as csvfile:
+        lines = csv.reader(csvfile, delimiter=',')
+        for row in lines:
+            i = i+1
+            time_utilization_graph.append(row[0][:-3])
+            print(row[7])
+            print("test index: " + str(i))
+            print(float(row[8]))
+            load.append(float(row[8]))
+    return load
+
+
+unoptimized = analyse_load_graph("./first_run_(8.3.21)/co2_unoptimized.csv")
+optimized = analyse_load_graph("./first_run_(8.3.21)/co2_optimized.csv")
+
+print(len(unoptimized))
+print(len(optimized))
+
+plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation unoptimized")
+plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label="CPU reservation optimized")
+
 
 x_tics = []
 x_labels = []
 
-for date in range(1, len(x), int(len(x)/xLabelCount)):
+for date in range(1, len(time_utilization_graph), int(len(time_utilization_graph) / xLabelCount)):
     x_tics.append(date)
-    x_labels.append(x[date])
+    x_labels.append(time_utilization_graph[date])
 
 
 axes = plt
@@ -51,13 +62,12 @@ axes = plt
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
-plt.fill_between(x, y)
 plt.xlabel('Times')
 plt.ylabel('CPU Reservation in %')
 plt.title('Kubernetes Cluster cpu reservation', fontsize=20)
 plt.grid()
 plt.ylim([0, 100])
-plt.xlim([0, len(y)-1])
+plt.xlim([0, len(time_utilization_graph) - 1])
 plt.legend()
 plt.show()
 
@@ -65,10 +75,10 @@ plt.show()
 # calculate graph for power consumption
 
 power_consumption_of_cluster = []
-for cluster_utilization_measured in y:
+for cluster_utilization_measured in cpu_utilization:
     power_consumption_of_cluster.append(power_estimation(cluster_utilization_measured/100))
 
-plt.plot(x, power_consumption_of_cluster)
+plt.plot(time_utilization_graph, power_consumption_of_cluster)
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
 plt.ylim(0, 600)
