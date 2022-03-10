@@ -6,27 +6,28 @@ xLabelCount = 12
 
 x = []
 y = []
+idle_power_watt = 212
+max_power_watt = 597
 
+file_to_analyze = 'utilization-logs.csv'
 
 # Function to calculate power consumption
 # https://dl.acm.org/doi/pdf/10.1145/1273440.1250665 page 15 Estimating Server Power Usage
 def power_estimation(percentage):
-    idle_power_watt = 212
-    max_power_watt = 597
     scaling_power = max_power_watt-idle_power_watt
     return idle_power_watt + scaling_power*percentage
 
 
 i = 0
-with open('utilization-logs.csv', 'r') as csvfile:
+with open(file_to_analyze, 'r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     for row in lines:
         i = i+1
         x.append(row[0][:-3])
         print(row[7])
-        # print("testingdex: " + str(i))
-        # print(float(row[8]))
-        y.append(float(row[7]))
+        print("testingdex: " + str(i))
+        print(float(row[8]))
+        y.append(float(row[8]))
   
 plt.plot(x, y, color='b', linestyle='solid', label="CPU reservation")
 
@@ -62,7 +63,9 @@ for cluster_utilization_measured in y:
 
 plt.plot(x, power_consumption_of_cluster)
 plt.xticks(x_tics, x_labels)
-plt.xticks(rotation=45)
+plt.xticks(rotation=20)
+plt.ylim(0, 600)
+plt.grid()
 plt.show()
 
 
@@ -83,6 +86,7 @@ plt.xlim(0, max(utilization_list))
 plt.title('Utilization to power transition model', fontsize=20)
 plt.xlabel('cluster utilization in %')
 plt.ylabel('cluster power consumption in watt')
+plt.grid()
 
 plt.plot(utilization_list, power_consumption_list)
 plt.show()
