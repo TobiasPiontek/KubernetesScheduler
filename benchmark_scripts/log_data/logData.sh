@@ -1,6 +1,6 @@
 logFileName="utilization-logs.csv"
 #set certain time for benchmark start
-targetTime="today 15:50" #can also be tomorrow/today with time or simply now for immediate start
+targetTime="today 16:50" #can also be tomorrow/today with time or simply now for immediate start
 echo "$(date) sleeping until: $targetTime"
 sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 
@@ -23,7 +23,7 @@ echo "waiting for clear minute"
 echo "Date,CPUMili,CPUPercent,CpuPercentPrecise,MemoryBytesUsage,MemoryPercentUsage"
 calc() { awk "BEGIN{print $*}"; }
 
-waitToNextMinute  #not needed since time trigger is used now
+# waitToNextMinute  #not needed since time trigger is used now
 while [ $elapsed -lt 86400 ]
 do
    logTimeStamp=$(date +"%a %T")
