@@ -131,8 +131,8 @@ system_reserved_millicores = 750
 # workload calibration parameters
 average_pod_count = 50
 avg_utilization = 0.6
-average_runtime = 600  # 10 minutes
-rate_of_critical_jobs = 0.8  # rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
+average_runtime = 60 * 30  # in seconds
+rate_of_critical_jobs = 0.6  # rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
 
 # parameter for benchmark calibration
 start_time = 16  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
