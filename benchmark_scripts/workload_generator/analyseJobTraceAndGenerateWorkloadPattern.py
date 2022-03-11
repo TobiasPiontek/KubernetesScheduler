@@ -135,7 +135,7 @@ average_runtime = 60 * 30  # in seconds
 rate_of_critical_jobs = 0.6  # rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
 
 # parameter for benchmark calibration
-start_time = 16  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
+start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 # pre calculated values for later use
 milli_cores_available = total_millicores - system_reserved_millicores

@@ -11,3 +11,5 @@ rate_of_critical_jobs = 0.8  # rate of critical jobs, a reduction of this percen
 start_time = 16  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 dayindex of run = 65 (for analysis purposes)
+
+co2 windows = 09:00 until 15:00

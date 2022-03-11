@@ -9,8 +9,11 @@ max_power_watt = 597
 
 # This block contains parameters for co2 efficiency analysis
 # first run day index = 65
+# second run day index = 69
 
-index_used_in_run = 65  # is generated at start of day in scheduler initialization
+index_used_in_run = 69  # is generated at start of day in scheduler initialization
+
+# first run start hour = 16
 benchmark_run_start_hour = 16  # hour, at which the scenario is started
 
 unoptimized_csv_log_path = "./first_run_(8.3.21)/co2_unoptimized.csv"
