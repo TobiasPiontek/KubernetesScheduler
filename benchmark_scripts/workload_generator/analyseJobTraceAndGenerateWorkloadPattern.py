@@ -139,7 +139,7 @@ start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equ
 
 # pre calculated values for later use
 milli_cores_available = total_millicores - system_reserved_millicores
-avg_job_interval_hour = float(3600) / (float(average_pod_count) * avg_utilization * (3600 / float(average_runtime)))
+avg_job_interval_hour = float(average_runtime) / (float(average_pod_count) * avg_utilization )
 avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
 
 
