@@ -126,7 +126,7 @@ for x in range(0, interval_count):
 
 # cluster parameters
 total_millicores = 4000
-system_reserved_millicores = 750
+system_reserved_milli_cores = 750
 
 # workload calibration parameters
 average_pod_count = 50
@@ -138,12 +138,12 @@ rate_of_critical_jobs = 0.6  # rate of critical jobs, a reduction of this percen
 start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 # pre calculated values for later use
-milli_cores_available = total_millicores - system_reserved_millicores
-avg_job_interval_hour = float(average_runtime) / (float(average_pod_count) * avg_utilization )
+milli_cores_available = total_millicores - system_reserved_milli_cores
+avg_job_interval = float(average_runtime) / (float(average_pod_count) * avg_utilization)
 avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
 
 
-print("avg job interval", avg_job_interval_hour)
+print("avg job interval", avg_job_interval)
 print("Debug", avg_milli_core_per_job)
 
 
@@ -159,8 +159,8 @@ writer_prediction = csv.writer(file_prediction, lineterminator="\n")  # use linu
 for x in range(0, 24):
     milli_core_adapted.append(avg_milli_core_per_job * core_count_normalized[x])
     runtime_adapted.append(average_runtime * runtime_normalized[x])
-    job_interval_adapted.append(int(avg_job_interval_hour * (1 / job_count_normalized[x]))) # invert value, as many jobs per hour mean low latency between job queue intervall
-    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_millicores) / total_millicores)
+    job_interval_adapted.append(int(avg_job_interval * (1 / job_count_normalized[x]))) # invert value, as many jobs per hour mean low latency between job queue intervall
+    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_milli_cores) / total_millicores)
     predicted_pod_count.append(runtime_adapted[x] / job_interval_adapted[x])
     predicted_hour_timestamp.append(x)
     row = [predicted_load[x]]
