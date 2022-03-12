@@ -131,7 +131,7 @@ system_reserved_milli_cores = 750
 average_pod_count = 30
 desired_utilization = 0.55
 
-average_runtime = 60 * 30  # in seconds
+average_runtime = 60 * 10  # in seconds
 rate_of_critical_jobs = 0.6  # rate of critical jobs, that can not be shifted
 
 # parameter for benchmark calibration
