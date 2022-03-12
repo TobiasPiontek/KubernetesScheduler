@@ -2,7 +2,6 @@ import csv
 import datetime
 import matplotlib.pyplot as plt
 import random
-import math
 
 # website used for debugging
 # https://timestamp.online/
