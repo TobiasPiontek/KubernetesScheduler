@@ -2,6 +2,7 @@ import csv
 import datetime
 import matplotlib.pyplot as plt
 import random
+import math
 
 # website used for debugging
 # https://timestamp.online/
@@ -127,8 +128,9 @@ total_milli_cores = 4000
 system_reserved_milli_cores = 750
 
 # workload calibration parameters
-average_pod_count = 50
-avg_utilization = 0.6
+average_pod_count = 30
+desired_utilization = 0.55
+
 average_runtime = 60 * 30  # in seconds
 rate_of_critical_jobs = 0.6  # rate of critical jobs, that can not be shifted
 
@@ -136,9 +138,10 @@ rate_of_critical_jobs = 0.6  # rate of critical jobs, that can not be shifted
 start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 # pre calculated values for later use
+avg_utilization = desired_utilization - system_reserved_milli_cores / total_milli_cores
 milli_cores_available = total_milli_cores - system_reserved_milli_cores
-avg_job_interval = float(average_runtime) / (float(average_pod_count) * avg_utilization)
-avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
+avg_job_interval = float(average_runtime) / (float(average_pod_count))
+avg_milli_core_per_job = avg_utilization * (milli_cores_available / average_pod_count)
 
 print("avg job interval", avg_job_interval)
 print("Debug", avg_milli_core_per_job)
@@ -195,5 +198,9 @@ while time_counter < 86400:  # generate for whole day
     time_counter = int(time_counter) + int(job_interval_adapted[adapted_hour])
 
 f.close()
+
+print(avg_job_interval)
+print(avg_milli_core_per_job)
+print((average_runtime / avg_job_interval) * avg_milli_core_per_job)
 
 print("done!")
