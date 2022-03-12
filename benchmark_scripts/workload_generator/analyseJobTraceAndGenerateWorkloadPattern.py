@@ -15,7 +15,7 @@ lines_total = 0
 
 interval_count = 24
 
-# initialize the arrays for workload analysation
+# initialize the arrays for analysing workload
 for x in range(0, interval_count):
     runtime.append([])
     core_count.append([])
@@ -41,10 +41,6 @@ with open("anon_jobs.gwf") as file:
             runtime[hour].append(line.__getitem__(3))
             cpu_utilization[hour].append(line.__getitem__(5))
 
-            # debug block to show inconsistency in data set:
-            # gwf 10 file entry: 2341 runtime= 140, cputime=239.89 (should be divided on corecount and cant therefore be greater than runtime)
-            # if float(line.__getitem__(5)) > float(line.__getitem__(3)):
-            # print("Debug", lines_total)
 
 job_count = []
 time_of_day = []
@@ -55,13 +51,13 @@ for jobs in core_count:
     i = i+1
 
 
-def calculate_avg_hour_usage(list):
+def calculate_avg_hour_usage(avf_resource):
     avg_frame = []
-    for hour_frame in list:
-        sum = 0.0
+    for hour_frame in avf_resource:
+        resource_sum = 0.0
         for element in hour_frame:
-            sum = sum + float(element)
-        avg = float(sum) / float(len(hour_frame))
+            resource_sum = resource_sum + float(element)
+        avg = float(resource_sum) / float(len(hour_frame))
         avg_frame.append(avg)
     return avg_frame
 
@@ -76,7 +72,7 @@ print("Valid lines", lines_used, " of total", lines_total, " lines with usage pe
 
 print("average Core Count per hour: ", core_count_avg_hour)
 print("average runtime per Hour: ", runtime_avg_hour)
-print("cpu utilization avg per Hour: ", cpu_utilization_avg_hour) #unusable
+print("cpu utilization avg per Hour: ", cpu_utilization_avg_hour)  # unusable
 print("job count per hour", job_count)
 print("time axis", time_of_day)
 
@@ -118,27 +114,27 @@ for x in range(0, interval_count):
     job_count_normalized.append(job_count.__getitem__(x) * interval_count / sum_job_count)
 
 # Normalized plots only for debugging
-#generate_bar_plot(time_of_day, core_count_normalized, "average core count per hour")
-#generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
-#generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
+# generate_bar_plot(time_of_day, core_count_normalized, "average core count per hour")
+# generate_bar_plot(time_of_day, runtime_normalized, "average runtime per hour")
+# generate_bar_plot(time_of_day, job_count_normalized, "average job count per hour")
 
 # generate the average values that get modified
 
 # cluster parameters
-total_millicores = 4000
+total_milli_cores = 4000
 system_reserved_milli_cores = 750
 
 # workload calibration parameters
 average_pod_count = 50
 avg_utilization = 0.6
 average_runtime = 60 * 30  # in seconds
-rate_of_critical_jobs = 0.6  # rate of critical jobs, a reduction of this percentage leads to more shiftable workload, thus more optimization potential
+rate_of_critical_jobs = 0.6  # rate of critical jobs, that can not be shifted
 
 # parameter for benchmark calibration
 start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 # pre calculated values for later use
-milli_cores_available = total_millicores - system_reserved_milli_cores
+milli_cores_available = total_milli_cores - system_reserved_milli_cores
 avg_job_interval = float(average_runtime) / (float(average_pod_count) * avg_utilization)
 avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
 
@@ -147,7 +143,7 @@ print("avg job interval", avg_job_interval)
 print("Debug", avg_milli_core_per_job)
 
 
-print("generating prediction grap...")
+print("generating prediction graph...")
 predicted_load = []
 predicted_pod_count = []
 predicted_hour_timestamp = []
@@ -159,8 +155,8 @@ writer_prediction = csv.writer(file_prediction, lineterminator="\n")  # use linu
 for x in range(0, 24):
     milli_core_adapted.append(avg_milli_core_per_job * core_count_normalized[x])
     runtime_adapted.append(average_runtime * runtime_normalized[x])
-    job_interval_adapted.append(int(avg_job_interval * (1 / job_count_normalized[x]))) # invert value, as many jobs per hour mean low latency between job queue intervall
-    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_milli_cores) / total_millicores)
+    job_interval_adapted.append(int(avg_job_interval * (1 / job_count_normalized[x])))
+    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_milli_cores) / total_milli_cores)
     predicted_pod_count.append(runtime_adapted[x] / job_interval_adapted[x])
     predicted_hour_timestamp.append(x)
     row = [predicted_load[x]]
@@ -171,13 +167,13 @@ generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load pr
 generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "predicted pod count per hour", "hour", "average concurrent pods")
 
 
-#Block to write the csv file
+# Block to write the csv file
 print("start writing workload file...")
 f = open('workload.csv', 'w', newline='')
-writer = csv.writer(f, lineterminator="\n") # use linux style line endings
+writer = csv.writer(f, lineterminator="\n")  # use linux style line endings
 
 time_counter = 0
-while time_counter < 86400: # generate for whole day
+while time_counter < 86400:  # generate for whole day
     # calculating adapted values
     current_hour = int(time_counter / 3600)
     adapted_hour = (current_hour + start_time) % 24
@@ -198,4 +194,3 @@ while time_counter < 86400: # generate for whole day
 f.close()
 
 print("done!")
-
