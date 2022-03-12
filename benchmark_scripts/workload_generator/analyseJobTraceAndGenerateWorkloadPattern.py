@@ -33,14 +33,15 @@ with open("anon_jobs.gwf") as file:
 
     for line in tsv_file:
         lines_total = lines_total + 1
-        if (float(line.__getitem__(3)) > -0.5) and (float(line.__getitem__(4)) > -0.5) and float(line.__getitem__(5)) > -0.5:
+        if (float(line.__getitem__(3)) > -0.5) and (float(line.__getitem__(4)) > -0.5) and float(
+                line.__getitem__(5)) > -0.5:
             lines_used = lines_used + 1
             hour = datetime.datetime.fromtimestamp(int(line.__getitem__(1))).hour
-            timestamp[hour].append(datetime.datetime.fromtimestamp(int(line.__getitem__(1))).strftime('%Y-%m-%d %H:%M:%S'))
+            timestamp[hour].append(
+                datetime.datetime.fromtimestamp(int(line.__getitem__(1))).strftime('%Y-%m-%d %H:%M:%S'))
             core_count[hour].append(line.__getitem__(4))
             runtime[hour].append(line.__getitem__(3))
             cpu_utilization[hour].append(line.__getitem__(5))
-
 
 job_count = []
 time_of_day = []
@@ -48,7 +49,7 @@ i = 0
 for jobs in core_count:
     time_of_day.append(i)
     job_count.append(len(jobs))
-    i = i+1
+    i = i + 1
 
 
 def calculate_avg_hour_usage(avf_resource):
@@ -67,8 +68,8 @@ core_count_avg_hour = calculate_avg_hour_usage(core_count)
 runtime_avg_hour = calculate_avg_hour_usage(runtime)
 cpu_utilization_avg_hour = calculate_avg_hour_usage(cpu_utilization)
 
-
-print("Valid lines", lines_used, " of total", lines_total, " lines with usage percentage of ", float(lines_used)*100/float(lines_total), "%")
+print("Valid lines", lines_used, " of total", lines_total, " lines with usage percentage of ",
+      float(lines_used) * 100 / float(lines_total), "%")
 
 print("average Core Count per hour: ", core_count_avg_hour)
 print("average runtime per Hour: ", runtime_avg_hour)
@@ -88,10 +89,11 @@ def generate_bar_plot(x_axis, y_axis, title, x_label, y_label):
 
 
 # Plots about the analyzed .gwf file
-generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour of workload log", "hour", "average core count")
-generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour of workload log", "hour", "average runtime in seconds")
+generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour of workload log", "hour",
+                  "average core count")
+generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour of workload log", "hour",
+                  "average runtime in seconds")
 generate_bar_plot(time_of_day, job_count, "average job count per hour of workload log", "hour", "average job count")
-
 
 # Block to generate the workflow list
 # generate total sum of hourly distributions
@@ -138,10 +140,8 @@ milli_cores_available = total_milli_cores - system_reserved_milli_cores
 avg_job_interval = float(average_runtime) / (float(average_pod_count) * avg_utilization)
 avg_milli_core_per_job = (milli_cores_available / average_pod_count) * avg_utilization
 
-
 print("avg job interval", avg_job_interval)
 print("Debug", avg_milli_core_per_job)
-
 
 print("generating prediction graph...")
 predicted_load = []
@@ -156,16 +156,18 @@ for x in range(0, 24):
     milli_core_adapted.append(avg_milli_core_per_job * core_count_normalized[x])
     runtime_adapted.append(average_runtime * runtime_normalized[x])
     job_interval_adapted.append(int(avg_job_interval * (1 / job_count_normalized[x])))
-    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[x] + system_reserved_milli_cores) / total_milli_cores)
+    predicted_load.append(((runtime_adapted[x] / job_interval_adapted[x]) * milli_core_adapted[
+        x] + system_reserved_milli_cores) / total_milli_cores)
     predicted_pod_count.append(runtime_adapted[x] / job_interval_adapted[x])
     predicted_hour_timestamp.append(x)
     row = [predicted_load[x]]
     writer_prediction.writerow(row)
 
 file_prediction.close()
-generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load prediction", "hour", "predicted cluster utilization")
-generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "predicted pod count per hour", "hour", "average concurrent pods")
-
+generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load prediction", "hour",
+                  "predicted cluster utilization")
+generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "predicted pod count per hour", "hour",
+                  "average concurrent pods")
 
 # Block to write the csv file
 print("start writing workload file...")
@@ -186,7 +188,8 @@ while time_counter < 86400:  # generate for whole day
         label = "not-critical"
     else:
         label = "critical"
-    write_data = [str(int(milli_core_adapted[adapted_hour])), str(int(runtime_adapted[adapted_hour])), str(int(job_interval_adapted[adapted_hour])), label]
+    write_data = [str(int(milli_core_adapted[adapted_hour])), str(int(runtime_adapted[adapted_hour])),
+                  str(int(job_interval_adapted[adapted_hour])), label]
     print(write_data)
     writer.writerow(write_data)
     time_counter = int(time_counter) + int(job_interval_adapted[adapted_hour])
