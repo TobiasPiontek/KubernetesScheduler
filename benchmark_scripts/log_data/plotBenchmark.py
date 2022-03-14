@@ -14,14 +14,13 @@ run_metadata = [[65, 16, "./first_run_(8.3.21)/co2_unoptimized.csv", "./first_ru
                 [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "second_run_(12.3.21)/co2_optimized.csv"]]
 run_to_analyze = 0
 
-index_used_in_run = run_metadata[run_to_analyze][0] # is generated at start of day in scheduler initialization
+index_used_in_run = run_metadata[run_to_analyze][0]  # is generated at start of day in scheduler initialization
 
 # first run start hour = 16
 benchmark_run_start_hour = run_metadata[run_to_analyze][1]  # hour, at which the scenario is started
 
 unoptimized_csv_log_path = run_metadata[run_to_analyze][2]
 optimized_csv_log_path = run_metadata[run_to_analyze][3]
-
 
 
 # Function to calculate power consumption
@@ -69,11 +68,9 @@ axes = plt
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
-
 plt.xlabel('time')
 plt.ylabel('CPU Reservation in %')
 plt.title('Kubernetes Cluster cpu reservation', fontsize=20)
-
 
 plt.grid()
 plt.ylim([0, 100])
@@ -104,8 +101,6 @@ plt.plot(time_utilization_graph, power_consumption_of_unoptimized_cluster, color
 plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='g', linestyle='solid',
          label="optimized power consumption")
 
-
-
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
 plt.ylim(0, max_power_watt)
@@ -120,7 +115,6 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
-
 # Plot power model
 
 utilization_list = []
@@ -129,8 +123,6 @@ for i in range(0, 11):
     utilization = i * 0.1
     utilization_list.append(utilization * 100)
     power_consumption_list.append(power_estimation(utilization))
-
-
 
 plt.clf()
 plt.ylim(0, max(power_consumption_list))
@@ -206,20 +198,24 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
     print(str(co2_hour_index) + ", " + str(index))
     power_consumption_of_optimized_cluster.__getitem__(index)
 
-    current_co2_unoptimized = power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
+    current_co2_unoptimized = power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[
+        co2_hour_index] / 60
     co2_unoptimized_sum = co2_unoptimized_sum + current_co2_unoptimized
     co2_unoptimized_accumulated.append(co2_unoptimized_sum)
     co2_per_hour_unoptimized.append(current_co2_unoptimized)
 
-    current_co2_optimized = power_consumption_of_optimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
+    current_co2_optimized = power_consumption_of_optimized_cluster.__getitem__(index) * real_co2_emission_data[
+        co2_hour_index] / 60
     co2_optimized_sum = co2_optimized_sum + current_co2_optimized
     co2_optimized_accumulated.append(co2_optimized_sum)
     co2_per_hour_optimized.append(current_co2_optimized)
 
     co2_per_hour_versus.append(co2_unoptimized_sum - co2_optimized_sum)
 
-plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid', label="co2 emissions unoptimized")
-plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid', label="co2 emissions optimized")
+plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid',
+         label="co2 emissions unoptimized")
+plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid',
+         label="co2 emissions optimized")
 plt.title('CO2 emissions of day accumulated', fontsize=20)
 plt.grid()
 plt.legend()
@@ -234,8 +230,8 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
-
-plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid', label="co2 emissions unoptimized")
+plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid',
+         label="co2 emissions unoptimized")
 plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
 plt.title('CO2 emissions of day per hour', fontsize=20)
 plt.grid()
@@ -250,7 +246,6 @@ file_title = "co2_emissions_per_hour_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
-
 
 plt.plot(time_utilization_graph, co2_per_hour_versus, color='g', linestyle='solid', label="co2 difference")
 plt.title('CO2 emissions accumulated difference', fontsize=20)
