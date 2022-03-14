@@ -128,16 +128,18 @@ system_reserved_milli_cores = 750
 
 # workload calibration parameters
 average_pod_count = 30
-desired_utilization = 0.55
-
 average_runtime = 60 * 10  # in seconds
-rate_of_critical_jobs = 0.6  # rate of critical jobs, that can not be shifted
+critical_job_rate = 0.6  # rate of critical jobs, that can not be shifted
+
+utilization_goal = 0.55
+
+
 
 # parameter for benchmark calibration
 start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
 # pre calculated values for later use
-avg_utilization = desired_utilization - system_reserved_milli_cores / total_milli_cores
+avg_utilization = utilization_goal - system_reserved_milli_cores / total_milli_cores
 milli_cores_available = total_milli_cores - system_reserved_milli_cores
 avg_job_interval = float(average_runtime) / (float(average_pod_count))
 avg_milli_core_per_job = avg_utilization * (milli_cores_available / average_pod_count)
@@ -186,7 +188,7 @@ while time_counter < 86400:  # generate for whole day
     print("job interval adapted: " + str(job_interval_adapted[adapted_hour]))
 
     label = ""
-    if random.random() > rate_of_critical_jobs:
+    if random.random() > critical_job_rate:
         label = "not-critical"
     else:
         label = "critical"

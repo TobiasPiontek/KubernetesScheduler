@@ -10,14 +10,17 @@ max_power_watt = 597
 # This block contains parameters for co2 efficiency analysis
 # first run day index = 65
 # second run day index = 69
+run_metadata = [[65, 16, "./first_run_(8.3.21)/co2_unoptimized.csv", "./first_run_(8.3.21)/co2_optimized.csv"],
+                [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "second_run_(12.3.21)/co2_optimized.csv"]]
+run_to_analyze = 1
 
-index_used_in_run = 69  # is generated at start of day in scheduler initialization
+index_used_in_run = run_metadata[run_to_analyze][0] # is generated at start of day in scheduler initialization
 
 # first run start hour = 16
-benchmark_run_start_hour = 16  # hour, at which the scenario is started
+benchmark_run_start_hour = run_metadata[run_to_analyze][1]  # hour, at which the scenario is started
 
-unoptimized_csv_log_path = "./first_run_(8.3.21)/co2_unoptimized.csv"
-optimized_csv_log_path = "./first_run_(8.3.21)/co2_optimized.csv"
+unoptimized_csv_log_path = run_metadata[run_to_analyze][2]
+optimized_csv_log_path = run_metadata[run_to_analyze][3]
 
 
 # Function to calculate power consumption
