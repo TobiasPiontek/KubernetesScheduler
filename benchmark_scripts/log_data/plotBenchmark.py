@@ -198,6 +198,8 @@ co2_optimized_sum = 0.0
 co2_optimized_accumulated = []
 co2_per_hour_optimized = []
 
+co2_per_hour_versus = []
+
 # Block to calculate total CO2 emission
 for index in range(0, len(power_consumption_of_unoptimized_cluster)):
     co2_hour_index = (int(index / 60) + benchmark_run_start_hour) % 24  # create for lookup
@@ -214,6 +216,7 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
     co2_optimized_accumulated.append(co2_optimized_sum)
     co2_per_hour_optimized.append(current_co2_optimized)
 
+    co2_per_hour_versus.append(co2_unoptimized_sum - co2_optimized_sum)
 
 plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid', label="co2 emissions unoptimized")
 plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid', label="co2 emissions optimized")
@@ -248,6 +251,21 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
+
+plt.plot(time_utilization_graph, co2_per_hour_versus, color='g', linestyle='solid', label="co2 difference")
+plt.title('CO2 emissions accumulated difference', fontsize=20)
+plt.grid()
+plt.legend()
+plt.xticks(rotation=20)
+plt.xticks(x_tics, x_labels)
+plt.xlabel('time')
+plt.ylabel('CO2 accumulated difference / hour')
+plt.ylim(min(co2_per_hour_versus), max(co2_per_hour_versus))
+plt.xlim([0, len(time_utilization_graph) - 1])
+file_title = "accumulated_co2_emissions_per_hour_difference" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
+plt.show()
 
 print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
 print("CO2 optimized emissions: " + str(co2_optimized_sum))
