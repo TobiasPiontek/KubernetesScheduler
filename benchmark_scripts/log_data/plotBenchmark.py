@@ -8,11 +8,11 @@ idle_power_watt = 212
 max_power_watt = 597
 
 # This block contains parameters for co2 efficiency analysis
-# first run day index = 65
-# second run day index = 69
+
+# 78
 run_metadata = [[65, 16, "./first_run_(8.3.21)/co2_unoptimized.csv", "./first_run_(8.3.21)/co2_optimized.csv"],
                 [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "second_run_(12.3.21)/co2_optimized.csv"]]
-run_to_analyze = 1
+run_to_analyze = 0
 
 index_used_in_run = run_metadata[run_to_analyze][0] # is generated at start of day in scheduler initialization
 
@@ -21,6 +21,7 @@ benchmark_run_start_hour = run_metadata[run_to_analyze][1]  # hour, at which the
 
 unoptimized_csv_log_path = run_metadata[run_to_analyze][2]
 optimized_csv_log_path = run_metadata[run_to_analyze][3]
+
 
 
 # Function to calculate power consumption
@@ -68,13 +69,19 @@ axes = plt
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
+
 plt.xlabel('time')
 plt.ylabel('CPU Reservation in %')
 plt.title('Kubernetes Cluster cpu reservation', fontsize=20)
+
+
 plt.grid()
 plt.ylim([0, 100])
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.legend()
+file_title = "cluster_cpu_reservation_" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
 plt.show()
 
 
@@ -97,7 +104,8 @@ plt.plot(time_utilization_graph, power_consumption_of_unoptimized_cluster, color
 plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='g', linestyle='solid',
          label="optimized power consumption")
 
-# plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, "test2")
+
+
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
 plt.ylim(0, max_power_watt)
@@ -107,7 +115,11 @@ plt.ylabel('cluster power consumption in watt')
 plt.title('Kubernetes Cluster energy consumption', fontsize=20)
 plt.legend()
 plt.grid()
+file_title = "cluster_power_consumption_" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
 plt.show()
+
 
 # Plot power model
 
@@ -118,15 +130,21 @@ for i in range(0, 11):
     utilization_list.append(utilization * 100)
     power_consumption_list.append(power_estimation(utilization))
 
+
+
 plt.clf()
 plt.ylim(0, max(power_consumption_list))
 plt.xlim(0, max(utilization_list))
 plt.title('Utilization to power transition model', fontsize=20)
 plt.xlabel('cluster utilization in %')
 plt.ylabel('cluster power consumption in watt')
+
 plt.grid()
 
 plt.plot(utilization_list, power_consumption_list)
+file_title = "power_model"
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
 plt.show()
 
 # read co2 efficiency graph and calculate
@@ -164,8 +182,12 @@ plt.grid()
 plt.legend()
 plt.xlabel('CO2/kw')
 plt.ylabel('time of day in h')
+
 plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)))
 plt.xlim(0, max(co2_emission_time))
+file_title = "co2_prediction_accuracy_" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
 plt.show()
 
 co2_unoptimized_sum = 0.0
@@ -200,7 +222,11 @@ plt.legend()
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 plt.xlabel('time')
-plt.ylabel('CO2 emissions')
+plt.ylabel('accumulated CO2 emissions')
 plt.ylim(0, max(co2_unoptimized_sum, co2_optimized_sum))
 plt.xlim([0, len(time_utilization_graph) - 1])
+file_title = "co2_emissions_accumulated_" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
 plt.show()
+
