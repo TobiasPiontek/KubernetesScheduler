@@ -191,10 +191,12 @@ plt.savefig(file_title + ".pdf")
 plt.show()
 
 co2_unoptimized_sum = 0.0
-co2_unoptimized = []
+co2_unoptimized_accumulated = []
+co2_per_hour_unoptimized = []
 
 co2_optimized_sum = 0.0
-co2_optimized = []
+co2_optimized_accumulated = []
+co2_per_hour_optimized = []
 
 # Block to calculate total CO2 emission
 for index in range(0, len(power_consumption_of_unoptimized_cluster)):
@@ -202,21 +204,20 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
     print(str(co2_hour_index) + ", " + str(index))
     power_consumption_of_optimized_cluster.__getitem__(index)
 
-    co2_unoptimized_sum = co2_unoptimized_sum + power_consumption_of_unoptimized_cluster.__getitem__(index) * \
-                          real_co2_emission_data[co2_hour_index] / 60
-    co2_unoptimized.append(co2_unoptimized_sum)
+    current_co2_optimized_unoptimized = power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
+    co2_unoptimized_sum = co2_unoptimized_sum + current_co2_optimized_unoptimized
+    co2_unoptimized_accumulated.append(co2_unoptimized_sum)
+    co2_per_hour_unoptimized.append(current_co2_optimized_unoptimized)
 
-    co2_optimized_sum = co2_optimized_sum + power_consumption_of_optimized_cluster.__getitem__(index) * \
-                        real_co2_emission_data[co2_hour_index] / 60
-    co2_optimized.append(co2_optimized_sum)
+    current_co2_optimized = power_consumption_of_optimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
+    co2_optimized_sum = co2_optimized_sum + current_co2_optimized
+    co2_optimized_accumulated.append(co2_optimized_sum)
+    co2_per_hour_optimized.append(current_co2_optimized)
 
-print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
-print("CO2 optimized emissions: " + str(co2_optimized_sum))
-print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)))
 
-plt.plot(time_utilization_graph, co2_unoptimized, color='r', linestyle='solid', label="co2 emissions unoptimized")
-plt.plot(time_utilization_graph, co2_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
-plt.title('CO2 emissions of day', fontsize=20)
+plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid', label="co2 emissions unoptimized")
+plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid', label="co2 emissions optimized")
+plt.title('CO2 emissions of day accumulated', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xticks(rotation=20)
@@ -230,3 +231,24 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
+
+plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid', label="co2 emissions unoptimized")
+plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
+plt.title('CO2 emissions of day per hour', fontsize=20)
+plt.grid()
+plt.legend()
+plt.xticks(rotation=20)
+plt.xticks(x_tics, x_labels)
+plt.xlabel('time')
+plt.ylabel('CO2 / hour')
+plt.ylim(0, max(max(co2_per_hour_unoptimized), max(co2_per_hour_optimized)))
+plt.xlim([0, len(time_utilization_graph) - 1])
+file_title = "co2_emissions_per_hour_" + str(run_to_analyze)
+plt.get_current_fig_manager().set_window_title(file_title)
+plt.savefig(file_title + ".pdf")
+plt.show()
+
+
+print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
+print("CO2 optimized emissions: " + str(co2_optimized_sum))
+print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)))
