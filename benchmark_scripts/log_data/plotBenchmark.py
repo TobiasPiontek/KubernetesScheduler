@@ -206,10 +206,10 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
     print(str(co2_hour_index) + ", " + str(index))
     power_consumption_of_optimized_cluster.__getitem__(index)
 
-    current_co2_optimized_unoptimized = power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
-    co2_unoptimized_sum = co2_unoptimized_sum + current_co2_optimized_unoptimized
+    current_co2_unoptimized = power_consumption_of_unoptimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
+    co2_unoptimized_sum = co2_unoptimized_sum + current_co2_unoptimized
     co2_unoptimized_accumulated.append(co2_unoptimized_sum)
-    co2_per_hour_unoptimized.append(current_co2_optimized_unoptimized)
+    co2_per_hour_unoptimized.append(current_co2_unoptimized)
 
     current_co2_optimized = power_consumption_of_optimized_cluster.__getitem__(index) * real_co2_emission_data[co2_hour_index] / 60
     co2_optimized_sum = co2_optimized_sum + current_co2_optimized
