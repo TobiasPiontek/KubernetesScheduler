@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import csv
 
-xLabelCount = 12
+xLabelCount = 13
 
 time_utilization_graph = []
 idle_power_watt = 212
@@ -53,18 +53,19 @@ optimized = analyse_load_graph(optimized_csv_log_path)
 print(len(unoptimized))
 print(len(optimized))
 
-plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation unoptimized")
-plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label="CPU reservation optimized")
+
 
 x_tics = []
 x_labels = []
 
-for date in range(1, len(time_utilization_graph), int(len(time_utilization_graph) / xLabelCount)):
-    x_tics.append(date)
-    x_labels.append(time_utilization_graph[date])
+for date in range(0, xLabelCount):
+    x_tics.append(date * 120)
+    x_labels.append(time_utilization_graph[date * 120])
 
 axes = plt
 
+plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation unoptimized")
+plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label="CPU reservation optimized")
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
@@ -76,6 +77,7 @@ plt.grid()
 plt.ylim([0, 100])
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.legend()
+plt.tight_layout()
 file_title = "cluster_cpu_reservation_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -103,13 +105,14 @@ plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='
 
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
-plt.ylim(0, max_power_watt)
+plt.ylim(0, max_power_watt * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.xlabel('time')
 plt.ylabel('cluster power consumption in watt')
 plt.title('Kubernetes Cluster energy consumption', fontsize=20)
 plt.legend()
 plt.grid()
+plt.tight_layout()
 file_title = "cluster_power_consumption_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -125,7 +128,7 @@ for i in range(0, 11):
     power_consumption_list.append(power_estimation(utilization))
 
 plt.clf()
-plt.ylim(0, max(power_consumption_list))
+plt.ylim(0, max(power_consumption_list) * 1.02)
 plt.xlim(0, max(utilization_list))
 plt.title('Utilization to power transition model', fontsize=20)
 plt.xlabel('cluster utilization in %')
@@ -134,6 +137,7 @@ plt.ylabel('cluster power consumption in watt')
 plt.grid()
 
 plt.plot(utilization_list, power_consumption_list)
+plt.tight_layout()
 file_title = "power_model"
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -156,6 +160,7 @@ with open("../../co2_prediction/Germany_CO2_Signal_2021.csv", 'r') as csvfile:
         if time_window > 23:
             break
 
+
 co2_prediction_data = []
 with open("../../co2_prediction/average_co2_emissions.csv", 'r') as csvfile:
     co2_prediction_data_string = []
@@ -166,17 +171,18 @@ with open("../../co2_prediction/average_co2_emissions.csv", 'r') as csvfile:
     for element in co2_prediction_data_string:
         co2_prediction_data.append(float(element))
 
-# plt.clf()
+
 plt.plot(co2_emission_time, real_co2_emission_data, color='r', linestyle='solid', label="co2 emission curve")
 plt.plot(co2_emission_time, co2_prediction_data, color='g', linestyle='solid', label="co2 prediction curve")
 plt.title('CO2 efficiency for day', fontsize=20)
 plt.grid()
 plt.legend()
-plt.xlabel('CO2/kw')
-plt.ylabel('time of day in h')
+plt.xlabel('time of day in h')
+plt.ylabel('CO2/kw')
 
-plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)))
+plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)) * 1.02)
 plt.xlim(0, max(co2_emission_time))
+plt.tight_layout()
 file_title = "co2_prediction_accuracy_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -223,8 +229,9 @@ plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 plt.xlabel('time')
 plt.ylabel('accumulated CO2 emissions')
-plt.ylim(0, max(co2_unoptimized_sum, co2_optimized_sum))
+plt.ylim(0, max(co2_unoptimized_sum, co2_optimized_sum) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
+plt.tight_layout()
 file_title = "co2_emissions_accumulated_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -240,8 +247,9 @@ plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 plt.xlabel('time')
 plt.ylabel('CO2 / hour')
-plt.ylim(0, max(max(co2_per_hour_unoptimized), max(co2_per_hour_optimized)))
+plt.ylim(0, max(max(co2_per_hour_unoptimized), max(co2_per_hour_optimized)) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
+plt.tight_layout()
 file_title = "co2_emissions_per_hour_" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
@@ -255,8 +263,9 @@ plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 plt.xlabel('time')
 plt.ylabel('CO2 accumulated difference / hour')
-plt.ylim(min(co2_per_hour_versus), max(co2_per_hour_versus))
+plt.ylim(min(co2_per_hour_versus), max(co2_per_hour_versus) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
+plt.tight_layout()
 file_title = "accumulated_co2_emissions_per_hour_difference" + str(run_to_analyze)
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
