@@ -59,12 +59,12 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 
 		log.Print("---------- Get timestamp of pod ----------")
 		//log.Print("Get pod timestamp: ", pod.GetCreationTimestamp())
-		log.Print("Get pod unix timestamp: ", pod.GetCreationTimestamp().Unix())
+		log.Print("Get pod unix timestamp: ", pod.GetCreationTimestamp().Unix(), "curent time is: ", time.Now().Unix())
 		log.Print("Get pod hour: ", pod.GetCreationTimestamp().Hour())
 		log.Print("Get pod minute: ", pod.GetCreationTimestamp().Minute())
 		log.Print("Get pod seconds: ", pod.GetCreationTimestamp().Second())
 		log.Print("Get Pod resource limits: ", pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue())
-
+		//pod.GetCreationTimestamp().Time.Unix()
 		//log.Print("---------- Get timestamp of scheduler instance ----------")
 		//log.Print("scheduler timestamp: ", time.Now())
 		//log.Print("scheduler unix timestamp: ", time.Now().Unix())
@@ -94,13 +94,18 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("workload for current hour is: ", workload_data_prediction[hour_utc_plus_one])
 		log.Print("Current workload prediction is: ", workloadlimit)
 
+		var podage = pod.GetCreationTimestamp().Unix() - time.Now().Unix()
+		var maximum_shift_time = int64(86400) // 24 hours, after this a pod is basically treated as a critical pod
+		log.Print("Current pod waiting for: ", podage, " seconds")
+
+		log.Print("Pod priority class is: ", pod.Spec.PriorityClassName)
+
 		if err != nil {
 			canNotSchedule[node.Name] = err.Error()
 		} else {
-			if result { //blocked before 11 or after 20  mind one hour offset
-				// < 12 means blocked before 13:00
-				// cpulimit is used to reserve cpu time to critical resources
-				if labels["realtime"] == "not-critical" && (cpulimit > workloadlimit || (hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
+			if result {
+				if labels["realtime"] == "not-critical" && podage < maximum_shift_time && (cpulimit > workloadlimit ||
+					(hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
 					log.Print("can not schedule!")
 					if cpulimit > workloadlimit {
 						log.Print("Reason for not schedule: CPU reservation limit exceeded!")
@@ -109,7 +114,6 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 					if hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window {
 						log.Print("Reason for not schedule: Out of optimal CO2 time window!")
 					}
-					//canSchedule = append(canSchedule, node) // remove later
 				} else {
 					resourcePercentagePod := (float64(pod.Spec.Containers[0].Resources.Limits.Cpu().MilliValue()) / float64(node.Status.Capacity.Cpu().MilliValue()))
 					log.Print("cpu Limit of node as float is: ", cpulimit)
@@ -224,7 +228,7 @@ func get_co2_time_window() (int, int) {
 	return startindex, startindex + windows_size
 }
 
-//This method is written and used mainly to extract parameters out of the kubernetes server kubectl api
+//This method extracts parameters out of the kubernetes server kubectl api
 func getCPUUtilization() float64 {
 	//block to aquire values
 	cmd := exec.Command("kubectl", "describe", "nodes")
@@ -235,11 +239,6 @@ func getCPUUtilization() float64 {
 		log.Print(err.Error())
 		return defaultLimit
 	}
-	// Print the output
-	//log.Print("doing sketchy stuff: ")
-	//log.Print(string(stdout))
-	//log.Print("doing sketchy stuff end: ")
-
 	//create regex that gets the cpu line
 	//regex that does not work because of instruction set :(
 	//Allocated resources:(.|\n)*cpu(\s)*(\d)*m(\s)*\(\K(\d)*
