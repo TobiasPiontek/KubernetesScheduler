@@ -9,9 +9,9 @@ max_power_watt = 597
 
 # This block contains parameters for co2 efficiency analysis
 
-# 78
 run_metadata = [[65, 16, "./first_run_(8.3.21)/co2_unoptimized.csv", "./first_run_(8.3.21)/co2_optimized.csv"],
-                [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "second_run_(12.3.21)/co2_optimized.csv"]]
+                [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "second_run_(12.3.21)/co2_optimized.csv"],
+                [78, 17, "", ""]]
 run_to_analyze = 0
 
 index_used_in_run = run_metadata[run_to_analyze][0]  # is generated at start of day in scheduler initialization

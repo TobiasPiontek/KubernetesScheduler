@@ -4,3 +4,4 @@
 /benchmark_scripts/workload_generator/*.csv
 /benchmark_scripts/log_data/*.csv
 /co2_prediction/UniGroningen_DE_2018.csv
+/benchmark_scripts/workload_generator/job_files_used/*.gwf

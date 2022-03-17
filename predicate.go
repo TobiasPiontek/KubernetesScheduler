@@ -92,7 +92,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 
 		var workloadlimit = 0.95 - workload_data_prediction[hour_utc_plus_one]*0.1
 		log.Print("workload for current hour is: ", workload_data_prediction[hour_utc_plus_one])
-		log.Print("Current workload prediction is: ", workloadlimit)
+		log.Print("Current workload limit is: ", workloadlimit)
 
 		var podage = pod.GetCreationTimestamp().Unix() - time.Now().Unix()
 		var maximum_shift_time = int64(86400) // 24 hours, after this a pod is basically treated as a critical pod
@@ -104,7 +104,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 			canNotSchedule[node.Name] = err.Error()
 		} else {
 			if result {
-				if labels["realtime"] == "not-critical" && podage < maximum_shift_time && (cpulimit > workloadlimit ||
+				if pod.Spec.PriorityClassName == "not-critical" && podage < maximum_shift_time && (cpulimit > workloadlimit ||
 					(hour_utc_plus_one < start_of_co2_window || hour_utc_plus_one > end_of_co2_window)) {
 					log.Print("can not schedule!")
 					if cpulimit > workloadlimit {
@@ -192,7 +192,7 @@ func get_current_day_as_float() []float64 {
 	log.Print("weekday is: ", weekday)
 	lookupvalue := weekday + (week-1)*7
 
-	lookupvalue = 69
+	lookupvalue = 78
 	//convert the sub string array to a float array
 
 	log.Print("get index for lookup: ", lookupvalue, " , Excel row: ", lookupvalue+1)

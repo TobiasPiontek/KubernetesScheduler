@@ -11,3 +11,4 @@ spec:
     image: nginx
     ports:
     - containerPort: 81
+  priorityClassName: not-critical
