@@ -54,7 +54,6 @@ print(len(unoptimized))
 print(len(optimized))
 
 
-
 x_tics = []
 x_labels = []
 

@@ -134,7 +134,6 @@ critical_job_rate = 0.6  # rate of critical jobs, that can not be shifted
 utilization_goal = 0.50
 
 
-
 # parameter for benchmark calibration
 start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
 
