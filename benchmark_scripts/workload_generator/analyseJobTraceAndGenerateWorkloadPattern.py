@@ -127,7 +127,7 @@ total_milli_cores = 4000
 system_reserved_milli_cores = 750
 
 # workload calibration parameters
-average_pod_count = 70
+average_pod_count = 30
 average_runtime = 60 * 10  # in seconds
 critical_job_rate = 0.6  # rate of critical jobs, that can not be shifted
 
