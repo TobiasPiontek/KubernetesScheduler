@@ -1,0 +1,19 @@
+# cluster parameters
+total_milli_cores = 4000
+system_reserved_milli_cores = 750
+
+# workload calibration parameters
+average_pod_count = 30
+average_runtime = 60 * 5  # in seconds
+critical_job_rate = 0.6  # rate of critical jobs, that can not be shifted
+
+utilization_goal = 0.55
+
+
+# parameter for benchmark calibration
+start_time = 17  # hour, at which the benchmark run starts 1 equal 01:00, 13 equals 13:00
+
+
+dayindex of run = 80 (for analysis purposes)
+
+co2 windows = 10:00 until 16:00

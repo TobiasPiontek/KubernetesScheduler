@@ -1,7 +1,7 @@
 #set certain time for benchmark start
 targetTime="today 17:00" #can also be tomorrow/today with time or simply now for immediate start
 #custom scheduler = "my-scheduler" default scheduler = "default-scheduler"
-schedulerToUse="default-scheduler"
+schedulerToUse="my-scheduler"
 echo "$(date) sleeping until: $targetTime"
 sleep $(( $(date -f - +%s- <<< "$targetTime"$'\nnow') 0 ))
 
