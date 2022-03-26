@@ -9,10 +9,10 @@ max_power_watt = 597
 
 # This block contains parameters for co2 efficiency analysis
 
-run_metadata = [[65, 16, "./first_run_(8.3.21)/co2_unoptimized.csv", "./first_run_(8.3.21)/co2_optimized.csv"],
-                [69, 17, "./second_run_(12.3.21)/co2_unoptimized.csv", "./second_run_(12.3.21)/co2_optimized.csv"],
-                [78, 17, "./third_run_(21.3.21)/co2_unoptimized.csv", "./third_run_(21.3.21)/co2_optimized.csv"],
-                [80, 17, "./third_run_(21.3.21)/co2_unoptimized.csv", "./third_run_(21.3.21)/co2_optimized.csv"]]
+run_metadata = [[65, 16, "./benchmark_1_(8.3.21)/co2_unoptimized.csv", "./benchmark_1_(8.3.21)/co2_optimized.csv"],
+                [69, 17, "./benchmark_2_(12.3.21)/co2_unoptimized.csv", "./benchmark_2_(12.3.21)/co2_optimized.csv"],
+                [78, 17, "./benchmark_3_(21.3.21)/co2_unoptimized.csv", "./benchmark_3_(21.3.21)/co2_optimized.csv"],
+                [80, 17, "./benchmark_4_(23.3.21)/co2_unoptimized.csv", "./benchmark_4_(23.3.21)/co2_optimized.csv"]]
 run_to_analyze = 3
 
 index_used_in_run = run_metadata[run_to_analyze][0]  # is generated at start of day in scheduler initialization
@@ -278,4 +278,4 @@ plt.show()
 
 print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
 print("CO2 optimized emissions: " + str(co2_optimized_sum))
-print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)))
+print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)* 100) + "%")
