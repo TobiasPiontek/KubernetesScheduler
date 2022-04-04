@@ -13,7 +13,7 @@ run_metadata = [[65, 16, "./benchmark_1_(8.3.21)/co2_unoptimized.csv", "./benchm
                 [69, 17, "./benchmark_2_(12.3.21)/co2_unoptimized.csv", "./benchmark_2_(12.3.21)/co2_optimized.csv"],
                 [78, 17, "./benchmark_3_(21.3.21)/co2_unoptimized.csv", "./benchmark_3_(21.3.21)/co2_optimized.csv"],
                 [80, 17, "./benchmark_4_(23.3.21)/co2_unoptimized.csv", "./benchmark_4_(23.3.21)/co2_optimized.csv"]]
-run_to_analyze = 3
+run_to_analyze = 0
 
 index_used_in_run = run_metadata[run_to_analyze][0]  # is generated at start of day in scheduler initialization
 
@@ -22,7 +22,6 @@ benchmark_run_start_hour = run_metadata[run_to_analyze][1]  # hour, at which the
 
 unoptimized_csv_log_path = run_metadata[run_to_analyze][2]
 optimized_csv_log_path = run_metadata[run_to_analyze][3]
-
 
 # Function to calculate power consumption
 # https://dl.acm.org/doi/pdf/10.1145/1273440.1250665 page 15 Estimating Server Power Usage
@@ -69,7 +68,7 @@ plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label=
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
-plt.xlabel('Timestamp')
+plt.xlabel('Time')
 plt.ylabel('CPU Reservation (%)')
 plt.title('Kubernetes Cluster CPU Reservation', fontsize=20)
 
@@ -95,7 +94,7 @@ for i in range(0, 11):
 plt.clf()
 plt.ylim(0, max(power_consumption_list) * 1.02)
 plt.xlim(0, max(utilization_list))
-plt.title('Utilization to Power Transition Model', fontsize=20)
+plt.title('Utilization against Power', fontsize=20)
 plt.xlabel('Utilization (%)')
 plt.ylabel('Power (kW)')
 
@@ -124,7 +123,7 @@ print("debug")
 print(power_consumption_of_unoptimized_cluster)
 
 plt.plot(time_utilization_graph, power_consumption_of_unoptimized_cluster, color='r', linestyle='solid',
-         label="Unoptimized Power Consumption")
+         label="Not Optimized Power Consumption")
 plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='g', linestyle='solid',
          label="Optimized Power Consumption")
 
@@ -132,9 +131,9 @@ plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
 plt.ylim(0, max_power_watt * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
-plt.xlabel('Timestamp')
+plt.xlabel('Time')
 plt.ylabel('Power (kW)')
-plt.title('Kubernetes Cluster Energy Consumption', fontsize=20)
+plt.title('Energy Consumption', fontsize=20)
 plt.legend()
 plt.grid()
 plt.tight_layout()
@@ -173,13 +172,13 @@ with open("../../co2_prediction/average_co2_emissions.csv", 'r') as csvfile:
         co2_prediction_data.append(float(element))
 
 
-plt.plot(co2_emission_time, real_co2_emission_data, color='r', linestyle='solid', label="co2 emission curve")
-plt.plot(co2_emission_time, co2_prediction_data, color='g', linestyle='solid', label="co2 prediction curve")
-plt.title('CO2 efficiency for Day', fontsize=20)
+plt.plot(co2_emission_time, real_co2_emission_data, color='c', linestyle='solid', label="co2 emission curve")
+plt.plot(co2_emission_time, co2_prediction_data, color='m', linestyle='solid', label="co2 prediction curve")
+plt.title('CO₂ Efficiency', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xlabel('Time (h)')
-plt.ylabel('gCO2eq / kWh')
+plt.ylabel('gCO₂eq / kWh')
 
 plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)) * 1.02)
 plt.xlim(0, max(co2_emission_time))
@@ -221,15 +220,15 @@ for index in range(0, len(power_consumption_of_unoptimized_cluster)):
 
 
 plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid',
-         label="co2 emissions unoptimized")
+         label="CO₂ emissions not optimized")
 plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
-plt.title('CO2 Emission Rate / Hour', fontsize=20)
+plt.title('CO₂ Emission / Hour', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
-plt.xlabel('Timestamp')
-plt.ylabel('CO2 (g) / h')
+plt.xlabel('Time')
+plt.ylabel('CO₂ (g) / h')
 plt.ylim(0, max(max(co2_per_hour_unoptimized), max(co2_per_hour_optimized)) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.tight_layout()
@@ -240,16 +239,16 @@ plt.show()
 
 
 plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid',
-         label="co2 emissions unoptimized")
+         label="CO₂ emissions not optimized")
 plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid',
-         label="co2 emissions optimized")
-plt.title('Total CO2 Emissions of Day', fontsize=20)
+         label="CO₂ emissions optimized")
+plt.title('Total CO₂ Emissions', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
-plt.xlabel('Timestamp')
-plt.ylabel('CO2 (g)')
+plt.xlabel('Time')
+plt.ylabel('CO₂ (g)')
 plt.ylim(0, max(co2_unoptimized_sum, co2_optimized_sum) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.tight_layout()
@@ -260,12 +259,12 @@ plt.show()
 
 
 plt.plot(time_utilization_graph, co2_per_hour_versus, color='b', linestyle='solid')
-plt.title('Total CO2 Savings', fontsize=20)
+plt.title('CO₂ Savings', fontsize=20)
 plt.grid()
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
-plt.xlabel('Timestamp')
-plt.ylabel('Co2 (g)')
+plt.xlabel('Time')
+plt.ylabel('CO₂ (g)')
 plt.ylim(min(co2_per_hour_versus), max(co2_per_hour_versus) * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.tight_layout()
@@ -274,7 +273,7 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
-print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum) + " g")
-print("CO2 optimized emissions: " + str(co2_optimized_sum) + " g")
-print("CO2 total emission difference: " + str(co2_unoptimized_sum - co2_optimized_sum) + " g")
-print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum) * 100) + "%")
+print("CO₂ not optimized emissions: " + str(co2_unoptimized_sum) + " g")
+print("CO₂ optimized emissions: " + str(co2_optimized_sum) + " g")
+print("CO₂ total emission difference: " + str(co2_unoptimized_sum - co2_optimized_sum) + " g")
+print("CO₂ reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum) * 100) + "%")
