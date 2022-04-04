@@ -13,7 +13,7 @@ run_metadata = [[65, 16, "./benchmark_1_(8.3.21)/co2_unoptimized.csv", "./benchm
                 [69, 17, "./benchmark_2_(12.3.21)/co2_unoptimized.csv", "./benchmark_2_(12.3.21)/co2_optimized.csv"],
                 [78, 17, "./benchmark_3_(21.3.21)/co2_unoptimized.csv", "./benchmark_3_(21.3.21)/co2_optimized.csv"],
                 [80, 17, "./benchmark_4_(23.3.21)/co2_unoptimized.csv", "./benchmark_4_(23.3.21)/co2_optimized.csv"]]
-run_to_analyze = 0
+run_to_analyze = 3
 
 index_used_in_run = run_metadata[run_to_analyze][0]  # is generated at start of day in scheduler initialization
 
