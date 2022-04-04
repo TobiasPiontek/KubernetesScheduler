@@ -4,8 +4,8 @@ import csv
 xLabelCount = 13
 
 time_utilization_graph = []
-idle_power_watt = 212
-max_power_watt = 597
+idle_power_watt = 0.212
+max_power_watt = 0.597
 
 # This block contains parameters for co2 efficiency analysis
 
@@ -97,7 +97,7 @@ plt.ylim(0, max(power_consumption_list) * 1.02)
 plt.xlim(0, max(utilization_list))
 plt.title('Utilization to power transition model', fontsize=20)
 plt.xlabel('cluster utilization in %')
-plt.ylabel('cluster power consumption in watt')
+plt.ylabel('cluster power consumption in kW')
 
 plt.grid()
 
@@ -107,7 +107,6 @@ file_title = "power_model"
 plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
-
 
 
 # calculate graph for power consumption
@@ -134,7 +133,7 @@ plt.xticks(rotation=20)
 plt.ylim(0, max_power_watt * 1.02)
 plt.xlim([0, len(time_utilization_graph) - 1])
 plt.xlabel('time')
-plt.ylabel('cluster power consumption in watt')
+plt.ylabel('cluster power consumption in kW')
 plt.title('Kubernetes Cluster energy consumption', fontsize=20)
 plt.legend()
 plt.grid()
@@ -180,7 +179,7 @@ plt.title('CO2 efficiency for day', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xlabel('time of day in h')
-plt.ylabel('CO2/kw')
+plt.ylabel('gCO2eq/kWh')
 
 plt.ylim(0, max(max(real_co2_emission_data), max(co2_prediction_data)) * 1.02)
 plt.xlim(0, max(co2_emission_time))
@@ -260,7 +259,6 @@ plt.savefig(file_title + ".pdf")
 plt.show()
 
 
-
 plt.plot(time_utilization_graph, co2_per_hour_versus, color='b', linestyle='solid')
 plt.title('CO2 emission savings over time', fontsize=20)
 plt.grid()
@@ -276,6 +274,7 @@ plt.get_current_fig_manager().set_window_title(file_title)
 plt.savefig(file_title + ".pdf")
 plt.show()
 
-print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum))
-print("CO2 optimized emissions: " + str(co2_optimized_sum))
-print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum)* 100) + "%")
+print("Co2 unoptimized emissions: " + str(co2_unoptimized_sum) + " g")
+print("CO2 optimized emissions: " + str(co2_optimized_sum) + " g")
+print("CO2 total emission difference: " + str(co2_unoptimized_sum - co2_optimized_sum) + " g")
+print("CO2 reduced by: " + str(((co2_unoptimized_sum - co2_optimized_sum) / co2_unoptimized_sum) * 100) + "%")
