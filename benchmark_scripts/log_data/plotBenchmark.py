@@ -23,6 +23,7 @@ benchmark_run_start_hour = run_metadata[run_to_analyze][1]  # hour, at which the
 unoptimized_csv_log_path = run_metadata[run_to_analyze][2]
 optimized_csv_log_path = run_metadata[run_to_analyze][3]
 
+
 # Function to calculate power consumption
 # https://dl.acm.org/doi/pdf/10.1145/1273440.1250665 page 15 Estimating Server Power Usage
 def power_estimation(percentage):
