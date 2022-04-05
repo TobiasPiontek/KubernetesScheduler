@@ -64,14 +64,14 @@ for date in range(0, xLabelCount):
 
 axes = plt
 
-plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation unoptimized")
+plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation not optimized")
 plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label="CPU reservation optimized")
 plt.xticks(rotation=20)
 plt.xticks(x_tics, x_labels)
 
 plt.xlabel('Time')
 plt.ylabel('CPU Reservation (%)')
-plt.title('Kubernetes Cluster CPU Reservation', fontsize=20)
+plt.title('CPU Reservation', fontsize=20)
 
 plt.grid()
 plt.ylim([0, 100])
@@ -124,9 +124,9 @@ print("debug")
 print(power_consumption_of_unoptimized_cluster)
 
 plt.plot(time_utilization_graph, power_consumption_of_unoptimized_cluster, color='r', linestyle='solid',
-         label="Not Optimized Power Consumption")
+         label="not optimized power consumption")
 plt.plot(time_utilization_graph, power_consumption_of_optimized_cluster, color='g', linestyle='solid',
-         label="Optimized Power Consumption")
+         label="optimized power consumption")
 
 plt.xticks(x_tics, x_labels)
 plt.xticks(rotation=20)
@@ -243,7 +243,7 @@ plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linesty
          label="CO₂ emissions not optimized")
 plt.plot(time_utilization_graph, co2_optimized_accumulated, color='g', linestyle='solid',
          label="CO₂ emissions optimized")
-plt.title('Total CO₂ Emissions', fontsize=20)
+plt.title('CO₂ Emission', fontsize=20)
 plt.grid()
 plt.legend()
 plt.xticks(rotation=20)
