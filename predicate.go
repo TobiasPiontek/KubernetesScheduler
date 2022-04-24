@@ -192,11 +192,8 @@ func get_current_day_as_float() []float64 {
 	log.Print("weekday is: ", weekday)
 	lookupvalue := weekday + (week-1)*7
 
-	lookupvalue = 80
-	//convert the sub string array to a float array
-
 	log.Print("get index for lookup: ", lookupvalue, " , Excel row: ", lookupvalue+1)
-
+	//convert the sub string array to a float array
 	converted := make([]float64, len(co2_data[lookupvalue]))
 	for index, element := range co2_data[lookupvalue] {
 		//log.Print("Index: ", index, ", Element: ", element)

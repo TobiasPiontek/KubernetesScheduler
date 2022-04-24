@@ -1,6 +1,6 @@
-echo "starting deployment process"
 #fill in the name of a docker hub Repository to push to (needs to be created and logged in in local docker account)
-IMAGE=tobpio/schedulerextender 
+IMAGE=tobpio/schedulerextender
+echo "starting deployment process"
 echo "building docker image"
 echo $(docker build . -t ${IMAGE}:latest)
 

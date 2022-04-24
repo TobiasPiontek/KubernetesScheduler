@@ -1,4 +1,10 @@
-# k8s-scheduler-extender-example
+# CO₂ Aware Scheduler for Kubernetes
+Centers
+
+This implementation is based on the [scheduler extender example](https://github.com/everpeace/k8s-scheduler-extender-example)
+
+Documentation of [Kubernetes Scheduler Extender](https://github.com/kubernetes/design-proposals-archive/blob/main/scheduling/scheduler_extender.md)
+
 
 ## run benchmark script:
 open **Benchmark_scripts** Folder
@@ -8,11 +14,37 @@ execute script in [git bash for windows](https://git-scm.com/download/win) by ru
 ``sh benchmark.sh``
 
 
-This is an example of [Kubernetes Scheduler Extender](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/scheduler_extender.md)
+# 1. Deploy scheduler
+there are two ways for deploying the scheduler.
 
-## How to
+Automatically by using a script
 
-### 0. checkout the repo
+Manually by entering all comands one by one in sequence.
+
+**Prequesite for both approaches:**
+
+- Have an Account at https://hub.docker.com/ .
+- Create a repository
+
+
+## 1.1 Automatically deploy project
+- open **deployScheduler.sh**
+- adapt the **Image** variable 
+  - set it to **USERACCOUNT/REPOSITORYNAME**
+- open git bash and enter **sh deployScheduler.sh**
+- wait until the log of scheduling container is opened automatically
+
+### 1.1.0 Test deployed scheduler
+- open **Test Pods** folder
+- choose one file and deploy on kubernetes
+  - execute **kubectl apply -f FILENAME**
+- in Minikube shell execute **minikube dashboard**
+- navigate to pods tab and see if deployment is created and if scheduled
+
+
+## 1.2 Manually deploy project
+
+### 1.2.0 checkout the repo
 
 ```shell
 $ git clone git@github.com:everpeace/k8s-scheduler-extender-example.git
@@ -20,7 +52,7 @@ $ cd k8s-scheduler-extender-example
 $ git submodule update --init
 ```
 
-### 1. buid a docker image
+### 1.2.1. buid a docker image
 
 ```
 $ IMAGE=YOUR_ORG/YOUR_IMAGE:YOUR_TAG
@@ -29,7 +61,7 @@ $ docker build . -t "${IMAGE}"
 $ docker push "${IMAGE}"
 ```
 
-### 2. deploy `my-scheduler` in `kube-system` namespace
+### 1.2.2. deploy `my-scheduler` in `kube-system` namespace
 please see ConfigMap in [extender.yaml](extender.yaml) for scheduler policy json which includes scheduler extender config.
 
 ```
@@ -48,14 +80,14 @@ $ kubectl -n kube-system logs deploy/my-scheduler -c my-scheduler-extender-ctr -
 
 Open up an another termianl and proceed.
 
-### 3. schedule test pod
+### 1.2.3. schedule test pod
 
-you will see `test-pod` will be scheduled by `my-scheduler`.
+you will see pods in **Test Pods** folder will be scheduled by `my-scheduler`.
 
 ```
-$ kubectl create -f test-pod.yaml
+$ kubectl create -f TESTPODNAME.yaml
 
-$ kubectl describe pod test-pod
+$ kubectl describe pod NAME_SPECIFIED_IN_POD_DESCRIPTION
 Name:         test-pod
 ...
 Events:
