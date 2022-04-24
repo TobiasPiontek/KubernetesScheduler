@@ -89,11 +89,11 @@ def generate_bar_plot(x_axis, y_axis, title, x_label, y_label):
 
 
 # Plots about the analyzed .gwf file
-generate_bar_plot(time_of_day, core_count_avg_hour, "average core count per hour of workload log", "hour",
-                  "average core count")
-generate_bar_plot(time_of_day, runtime_avg_hour, "average runtime per hour of workload log", "hour",
-                  "average runtime in seconds")
-generate_bar_plot(time_of_day, job_count, "average job count per hour of workload log", "hour", "average job count")
+generate_bar_plot(time_of_day, core_count_avg_hour, "Core Count Per Hour", "Hour",
+                  "Average Core Count")
+generate_bar_plot(time_of_day, runtime_avg_hour, "Average Job Duration", "Hour",
+                  "Average Runtime (s)")
+generate_bar_plot(time_of_day, job_count, "Job Count", "Hour", "Job Count")
 
 # Block to generate the workflow list
 # generate total sum of hourly distributions
@@ -131,7 +131,7 @@ average_pod_count = 30
 average_runtime = 60 * 5  # in seconds
 critical_job_rate = 0.6  # rate of critical jobs, that can not be shifted
 
-utilization_goal = 0.55
+utilization_goal = 0.50
 
 
 # parameter for benchmark calibration
@@ -167,10 +167,10 @@ for x in range(0, 24):
     writer_prediction.writerow(row)
 
 file_prediction.close()
-generate_bar_plot(predicted_hour_timestamp, predicted_load, "unoptimized load prediction", "hour",
-                  "predicted cluster utilization")
-generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "predicted pod count per hour", "hour",
-                  "average concurrent pods")
+generate_bar_plot(predicted_hour_timestamp, predicted_load, "Load Prediction", "Hour",
+                  "Load Prediction")
+generate_bar_plot(predicted_hour_timestamp, predicted_pod_count, "Pod Count Prediction", "Hour",
+                  "Concurrent Pods")
 
 # Block to write the csv file
 print("start writing workload file...")
