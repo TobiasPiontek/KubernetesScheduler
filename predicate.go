@@ -94,7 +94,7 @@ func (p Predicate) Handler(args schedulerapi.ExtenderArgs) *schedulerapi.Extende
 		log.Print("workload for current hour is: ", workload_data_prediction[hour_utc_plus_one])
 		log.Print("Current workload limit is: ", workloadlimit)
 
-		var podage = pod.GetCreationTimestamp().Unix() - time.Now().Unix()
+		var podage = time.Now().Unix() - pod.GetCreationTimestamp().Unix()
 		var maximum_shift_time = int64(86400) // 24 hours, after this a pod is basically treated as a critical pod
 		log.Print("Current pod waiting for: ", podage, " seconds")
 
@@ -208,7 +208,7 @@ func get_current_day_as_float() []float64 {
 //returns the start hour and the endhour of the optimal time window as:
 //starttime, endtime
 func get_co2_time_window() (int, int) {
-	var windows_size = 6
+	var windows_size = 6 //window size of 6 results in a 7 hour time window, as both hours are included in interval
 	var current_day = get_current_day_as_float()
 	var co2_sum float64 = 100000000
 	var startindex int = 0
@@ -246,7 +246,7 @@ func getCPUUtilization() float64 {
 	//extract the percentage value of the cpu utilization
 	cpuResultRelevantString = cpuResultRelevantString[(strings.IndexByte(cpuResultRelevantString, '(') + 1):]
 	var cpuLimit float64
-	cpuLimit, err = strconv.ParseFloat(cpuResultRelevantString, 64)
+	cpuLimit, _ = strconv.ParseFloat(cpuResultRelevantString, 64)
 	cpuLimit = cpuLimit / 100
 	return cpuLimit
 }
