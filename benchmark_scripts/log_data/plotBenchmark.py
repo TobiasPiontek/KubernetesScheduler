@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import csv
+import numpy
 
 xLabelCount = 13
 
@@ -86,6 +87,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     # Plot power model
 
@@ -112,6 +114,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     # calculate graph for power consumption
 
@@ -148,6 +151,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     # read co2 efficiency graph and calculate
     real_co2_emission_data = []
@@ -176,6 +180,9 @@ for run_to_analyze in range(len(run_metadata)):
         for element in co2_prediction_data_string:
             co2_prediction_data.append(float(element))
 
+    real_co2_emission_data = numpy.roll(real_co2_emission_data, benchmark_run_start_hour)
+    co2_prediction_data = numpy.roll(co2_prediction_data, benchmark_run_start_hour)
+
     plt.plot(co2_emission_time, real_co2_emission_data, color='c', linestyle='solid', label="co2 emission curve")
     plt.plot(co2_emission_time, co2_prediction_data, color='m', linestyle='solid', label="co2 prediction curve")
     plt.title('CO₂ Efficiency', fontsize=20)
@@ -192,6 +199,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     co2_unoptimized_sum = 0.0
     co2_unoptimized_accumulated = []
@@ -225,8 +233,7 @@ for run_to_analyze in range(len(run_metadata)):
 
     plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid',
              label="CO₂ emissions not optimized")
-    plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g',
-             inestyle='solid', label="co2 emissions optimized")
+    plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
     plt.title('CO₂ Emission / Hour', fontsize=20)
     plt.grid()
     plt.legend()
@@ -242,6 +249,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid',
              label="CO₂ emissions not optimized")
@@ -262,6 +270,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     plt.plot(time_utilization_graph, co2_per_hour_versus, color='b', linestyle='solid')
     plt.title('CO₂ Savings', fontsize=20)
@@ -278,6 +287,7 @@ for run_to_analyze in range(len(run_metadata)):
     plt.savefig(plot_folder + file_title + ".pdf")
     if debug_plots:
         plt.show()
+    plt.clf()
 
     print("CO₂ not optimized emissions: " + str(co2_unoptimized_sum) + " g")
     print("CO₂ optimized emissions: " + str(co2_optimized_sum) + " g")
