@@ -1,5 +1,8 @@
 import csv
 import datetime
+import time
+
+start_time = time.time()
 
 file_to_use = 'Germany_CO2_Signal_2020.csv'
 
@@ -116,3 +119,5 @@ writer = csv.writer(f, lineterminator="\n")
 for week in range(0, len(week_array)):  # iterate for all days from
     for day in range(0, int(len(week_array[week]) / 24)):
         writer.writerow(median_weekday[week][day])
+
+print("--- %s seconds ---" % (time.time() - start_time))
