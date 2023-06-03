@@ -153,8 +153,8 @@ for run_to_analyze in range(len(run_metadata)):
     plt.xlim([0, len(time_utilization_graph) - 1])
     plt.xlabel('Time')
     plt.ylabel('Power (kW)')
-    plt.title('Energy Consumption', fontsize=20)
-    plt.legend()
+    # plt.title('Energy Consumption', fontsize=20)
+    # plt.legend()      # commented out for paper
     plt.grid()
     plt.tight_layout()
     file_title = "cluster_power_consumption_" + str(run_to_analyze)
