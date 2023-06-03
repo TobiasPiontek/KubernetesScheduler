@@ -136,8 +136,8 @@ for run_to_analyze in range(len(run_metadata)):
     power_consumption_of_optimized_cluster = analyse_power_consumption(optimized)
 
     # time shift block      TODO: maybe make optional
-    power_consumption_of_unoptimized_cluster = numpy.roll(power_consumption_of_unoptimized_cluster, benchmark_run_start_hour * 60).tolist() # Comment out for original print
-    power_consumption_of_optimized_cluster = numpy.roll(power_consumption_of_optimized_cluster, benchmark_run_start_hour * 60).tolist()  # Comment out for original print
+    # power_consumption_of_unoptimized_cluster = numpy.roll(power_consumption_of_unoptimized_cluster, benchmark_run_start_hour * 60).tolist() # Comment out for original print
+    # power_consumption_of_optimized_cluster = numpy.roll(power_consumption_of_optimized_cluster, benchmark_run_start_hour * 60).tolist()  # Comment out for original print
 
     print("debug")
     print(power_consumption_of_unoptimized_cluster)
