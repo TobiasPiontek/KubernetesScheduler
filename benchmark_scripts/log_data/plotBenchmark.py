@@ -45,7 +45,7 @@ for run_to_analyze in range(len(run_metadata)):
             year = csv.reader(load_csv_file, delimiter=',')
             for hour in year:
                 debug_index = debug_index + 1
-                time_utilization_graph.append(hour[0][:-3])
+                time_utilization_graph.append(hour[0][4:-3])    # fix hour scale with cutting of days on scale
                 print(hour[7])
                 print("test index: " + str(debug_index))
                 print(float(hour[8]))
@@ -64,7 +64,6 @@ for run_to_analyze in range(len(run_metadata)):
 
     # shift time utilization TODO: maybe make optional
     time_utilization_graph = numpy.roll(time_utilization_graph, benchmark_run_start_hour * 60).tolist()   # times 60 for hour to minute conversion
-
 
     for date in range(0, xLabelCount):
         x_tics.append(date * 120)
