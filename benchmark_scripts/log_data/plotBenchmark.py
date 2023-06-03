@@ -62,11 +62,19 @@ for run_to_analyze in range(len(run_metadata)):
     x_tics = []
     x_labels = []
 
+    # shift time utilization TODO: maybe make optional
+    time_utilization_graph = numpy.roll(time_utilization_graph, benchmark_run_start_hour * 60).tolist()   # times 60 for hour to minute conversion
+
+
     for date in range(0, xLabelCount):
         x_tics.append(date * 120)
         x_labels.append(time_utilization_graph[date * 120])
 
     axes = plt
+
+    # shift plot data in time       TODO: maybe make optional
+    unoptimized = numpy.roll(unoptimized, benchmark_run_start_hour * 60).tolist()       # Comment out for original print
+    optimized = numpy.roll(optimized, benchmark_run_start_hour * 60).tolist()           # Comment out for original print
 
     plt.plot(time_utilization_graph, unoptimized, color='r', linestyle='solid', label="CPU reservation not optimized")
     plt.plot(time_utilization_graph, optimized, color='g', linestyle='solid', label="CPU reservation optimized")
@@ -97,8 +105,8 @@ for run_to_analyze in range(len(run_metadata)):
         utilization = i * 0.1
         utilization_list.append(utilization * 100)
         power_consumption_list.append(power_estimation(utilization))
-
     plt.clf()
+
     plt.ylim(0, max(power_consumption_list) * 1.02)
     plt.xlim(0, max(utilization_list))
     plt.title('Utilization against Power', fontsize=20)
@@ -127,6 +135,10 @@ for run_to_analyze in range(len(run_metadata)):
 
     power_consumption_of_unoptimized_cluster = analyse_power_consumption(unoptimized)
     power_consumption_of_optimized_cluster = analyse_power_consumption(optimized)
+
+    # time shift block      TODO: maybe make optional
+    power_consumption_of_unoptimized_cluster = numpy.roll(power_consumption_of_unoptimized_cluster, benchmark_run_start_hour * 60).tolist() # Comment out for original print
+    power_consumption_of_optimized_cluster = numpy.roll(power_consumption_of_optimized_cluster, benchmark_run_start_hour * 60).tolist()  # Comment out for original print
 
     print("debug")
     print(power_consumption_of_unoptimized_cluster)
@@ -180,8 +192,8 @@ for run_to_analyze in range(len(run_metadata)):
         for element in co2_prediction_data_string:
             co2_prediction_data.append(float(element))
 
-    real_co2_emission_data = numpy.roll(real_co2_emission_data, benchmark_run_start_hour)
-    co2_prediction_data = numpy.roll(co2_prediction_data, benchmark_run_start_hour)
+    # real_co2_emission_data = numpy.roll(real_co2_emission_data, benchmark_run_start_hour)   # use to modify array print
+    # co2_prediction_data = numpy.roll(co2_prediction_data, benchmark_run_start_hour)     # use to modify array print
 
     plt.plot(co2_emission_time, real_co2_emission_data, color='c', linestyle='solid', label="co2 emission curve")
     plt.plot(co2_emission_time, co2_prediction_data, color='m', linestyle='solid', label="co2 prediction curve")
@@ -231,6 +243,10 @@ for run_to_analyze in range(len(run_metadata)):
 
         co2_per_hour_versus.append(co2_unoptimized_sum - co2_optimized_sum)
 
+    # Shift data graph time plot TODO: maybe make optional later
+    co2_per_hour_unoptimized = numpy.roll(co2_per_hour_unoptimized, benchmark_run_start_hour * 60).tolist()
+    co2_per_hour_optimized = numpy.roll(co2_per_hour_optimized, benchmark_run_start_hour * 60).tolist()
+
     plt.plot(time_utilization_graph, co2_per_hour_unoptimized, color='r', linestyle='solid',
              label="CO₂ emissions not optimized")
     plt.plot(time_utilization_graph, co2_per_hour_optimized, color='g', linestyle='solid', label="co2 emissions optimized")
@@ -250,6 +266,10 @@ for run_to_analyze in range(len(run_metadata)):
     if debug_plots:
         plt.show()
     plt.clf()
+
+    # shift in time TODO: maybe make this optional with flag later
+    co2_unoptimized_accumulated = numpy.roll(co2_unoptimized_accumulated, benchmark_run_start_hour * 60).tolist()
+    co2_optimized_accumulated = numpy.roll(co2_optimized_accumulated, benchmark_run_start_hour * 60).tolist()
 
     plt.plot(time_utilization_graph, co2_unoptimized_accumulated, color='r', linestyle='solid',
              label="CO₂ emissions not optimized")
@@ -271,6 +291,9 @@ for run_to_analyze in range(len(run_metadata)):
     if debug_plots:
         plt.show()
     plt.clf()
+
+    # shift in time TODO: maybe make this optional with flag later
+    co2_per_hour_versus = numpy.roll(co2_per_hour_versus, benchmark_run_start_hour * 60).tolist()
 
     plt.plot(time_utilization_graph, co2_per_hour_versus, color='b', linestyle='solid')
     plt.title('CO₂ Savings', fontsize=20)
