@@ -82,12 +82,12 @@ for run_to_analyze in range(len(run_metadata)):
 
     plt.xlabel('Time')
     plt.ylabel('CPU Reservation (%)')
-    plt.title('CPU Reservation', fontsize=20)
+    # plt.title('CPU Reservation', fontsize=20)
 
     plt.grid()
     plt.ylim([0, 100])
     plt.xlim([0, len(time_utilization_graph) - 1])
-    plt.legend()
+    # plt.legend()
     plt.tight_layout()
     file_title = "cluster_cpu_reservation_" + str(run_to_analyze)
     plt.get_current_fig_manager().set_window_title(file_title)
